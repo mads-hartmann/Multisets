@@ -13,3 +13,7 @@ performance. The goal is to submit a SIP document adding Multisets to Scala at
 the end of the project and as such comprehensive testing is required.
 
 *Semester Project by Mads Hartmann Jensen, fall 2012.*
+
+## Dependencies 
+
+- [ScalaCheck](https://github.com/rickynils/scalacheck)
