@@ -1,2 +1,4 @@
 
 projectDirectory = "$CWD"
+
+scmStatus = false
