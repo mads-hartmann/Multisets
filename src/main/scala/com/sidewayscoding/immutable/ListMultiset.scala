@@ -48,10 +48,10 @@ class ListMultiset[A : Ordering] private[immutable] (val delegate: TreeMap[A, In
 
 object ListMultiset {
 
-  implicit def canBuildFrom[A : Ordering]: CanBuildFrom[ListMultiset[A], A, ListMultiset[A]] = 
-    new CanBuildFrom[ListMultiset[A], A, ListMultiset[A]] {
+  implicit def canBuildFrom[A : Ordering]: CanBuildFrom[ListMultiset[_], A, ListMultiset[A]] = 
+    new CanBuildFrom[ListMultiset[_], A, ListMultiset[A]] {
       def apply(): Builder[A, ListMultiset[A]] = newBuilder
-      def apply(from: ListMultiset[A]): Builder[A, ListMultiset[A]] = newBuilder
+      def apply(from: ListMultiset[_]): Builder[A, ListMultiset[A]] = newBuilder
     }
 
   def newBuilder[A : Ordering]: Builder[A, ListMultiset[A]] = new ListMultisetBuilder
