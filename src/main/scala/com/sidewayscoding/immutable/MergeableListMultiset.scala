@@ -1,9 +1,11 @@
 package com.sidewayscoding.immutable
 
-import com.sidewayscoding.{ MultisetLike }
-import scala.collection.generic.{ CanBuildFrom }
-import scala.collection.mutable.{ Builder }
+import scala.collection.generic.CanBuildFrom
+import scala.collection.mutable.Builder
+
 import com.sidewayscoding.Mergeable
+import com.sidewayscoding.MergeableMultiset
+import com.sidewayscoding.MergeableMultisetLike
 
 /**
  *  Don't use. This is a reference implementation with horrible performance.
@@ -12,12 +14,11 @@ import com.sidewayscoding.Mergeable
  *  than one that has no obvious bugs) so it can be used to test more advanced
  *  implementations.
  */
-class MergeableListMultiset[A : Mergeable] private[immutable] (val delegate: Map[A, Int]) extends Multiset[A] with MultisetLike[A, MergeableListMultiset[A]] {
-
-  import MergeableListMultiset._
+class MergeableListMultiset[A] private[immutable] (val delegate: Map[A, Int])(implicit val mergeable: Mergeable[A]) extends MergeableMultiset[A] 
+                                                                                                                       with MergeableMultisetLike[A, MergeableListMultiset[A]] {
 
   def empty = MergeableListMultiset[A]()
-  
+
   def iterator: Iterator[A] = new MergeableListMultisetIterator(delegate)
 
   override def newBuilder: Builder[A, MergeableListMultiset[A]] = MergeableListMultiset.newBuilder[A]
@@ -49,7 +50,7 @@ class MergeableListMultiset[A : Mergeable] private[immutable] (val delegate: Map
 
 }
 
-object MergeableListMultiset extends ImmutableMultisetFactory[MergeableListMultiset] {
+object MergeableListMultiset extends ImmutableMergeableMultisetFactory[MergeableListMultiset] {
 
   implicit def canBuildFrom[A : Mergeable]: CanBuildFrom[MergeableListMultiset[_], A, MergeableListMultiset[A]] = 
     new CanBuildFrom[MergeableListMultiset[_], A, MergeableListMultiset[A]] {
@@ -63,11 +64,11 @@ object MergeableListMultiset extends ImmutableMultisetFactory[MergeableListMulti
 
   def apply[A : Mergeable](): MergeableListMultiset[A] =
     new MergeableListMultiset[A](Map[A,Int]())
-   
+
 }
-    
+
 class MergeableListMultisetBuilder[A : Mergeable ] extends Builder[A, MergeableListMultiset[A]] {
- 
+
   private var delegate: Map[A, Int] = Map[A,Int]()
 
   def +=(a: A): this.type = {
@@ -75,9 +76,9 @@ class MergeableListMultisetBuilder[A : Mergeable ] extends Builder[A, MergeableL
     delegate = delegate.updated(a, newCount)
     this
   }
-  
+
   def clear() = { delegate = Map[A,Int]() }
-  
+
   def result = { 
     new MergeableListMultiset[A](delegate) 
   }
@@ -90,10 +91,10 @@ class MergeableListMultisetIterator[A : Mergeable](private val tm: Map[A, Int]) 
   private[this] var currentElementCount: Int = 0
   private[this] var currentElement: Option[A] = None
 
-  override def hasNext: Boolean = {      
+  override def hasNext: Boolean = {
     indexInElement < currentElementCount || mapIterator.hasNext
   }
-  
+
   override def next(): A = {
     if (indexInElement < currentElementCount) {
         indexInElement += 1
@@ -107,8 +108,8 @@ class MergeableListMultisetIterator[A : Mergeable](private val tm: Map[A, Int]) 
           return e
         } else {
         throw new NoSuchElementException("next on empty iterator")
-      }      
+      }
     }
   }
-} 
+}
 

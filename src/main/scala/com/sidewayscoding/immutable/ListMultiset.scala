@@ -4,6 +4,7 @@ import com.sidewayscoding.Mergeable
 import com.sidewayscoding.MultisetLike
 import scala.collection.mutable.Builder
 import scala.collection.generic.CanBuildFrom
+import com.sidewayscoding.Multiset
 
 class ListMultiset[A] private[immutable] (val delegate: Map[A, List[A]]) extends Multiset[A]
                                                                             with MultisetLike[A, ListMultiset[A]] {
@@ -64,7 +65,7 @@ object ListMultiset extends ImmutableMultisetFactory[ListMultiset] {
   
 }
 
-class ListMultisetBuilder[A] extends Builder[A, ListMultiset[A]] {
+private class ListMultisetBuilder[A] extends Builder[A, ListMultiset[A]] {
 
   private var delegate: Map[A, List[A]] = Map[A,List[A]]()
 
@@ -80,7 +81,7 @@ class ListMultisetBuilder[A] extends Builder[A, ListMultiset[A]] {
   
 }
 
-class ListMultisetIterator[A](private val tm: Map[A, List[A]]) extends Iterator[A] {
+private class ListMultisetIterator[A](private val tm: Map[A, List[A]]) extends Iterator[A] {
   
   private val mapIterator = tm.iterator
   private var listIterator: Option[Iterator[A]] = None

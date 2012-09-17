@@ -2,6 +2,7 @@ package com.sidewayscoding.immutable
 
 import com.sidewayscoding.{ MultisetLike }
 import scala.collection.mutable.Builder
+import com.sidewayscoding.Multiset
 
 abstract class ImmutableMultisetFactory[CC[X] <: Multiset[X] with MultisetLike[X, CC[X]]] {
  
