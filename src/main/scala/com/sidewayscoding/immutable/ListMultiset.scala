@@ -5,7 +5,8 @@ import com.sidewayscoding.MultisetLike
 import scala.collection.mutable.Builder
 import scala.collection.generic.CanBuildFrom
 
-class ListMultiset[A] private[immutable] (val delegate: Map[A, List[A]]) extends MultisetLike[A, ListMultiset[A]] {
+class ListMultiset[A] private[immutable] (val delegate: Map[A, List[A]]) extends Multiset[A]
+                                                                            with MultisetLike[A, ListMultiset[A]] {
   
   def empty = new ListMultiset[A](Map[A, List[A]]())
   
@@ -48,7 +49,7 @@ class ListMultiset[A] private[immutable] (val delegate: Map[A, List[A]]) extends
 /**
  * @author mads379
  */
-object ListMultiset {
+object ListMultiset extends ImmutableMultisetFactory[ListMultiset] {
   
   implicit def canBuildFrom[A]: CanBuildFrom[ListMultiset[_], A, ListMultiset[A]] = 
     new CanBuildFrom[ListMultiset[_], A, ListMultiset[A]] {

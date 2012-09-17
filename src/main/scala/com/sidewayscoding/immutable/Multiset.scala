@@ -1,7 +1,8 @@
 package com.sidewayscoding.immutable
 
-object Multiset {
-	
-  
-  
+import scala.collection.{ GenIterable }
+import com.sidewayscoding.MultisetLike
+
+trait Multiset[A] extends MultisetLike[A, Multiset[A]] {
+
 }

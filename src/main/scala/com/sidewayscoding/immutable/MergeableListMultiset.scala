@@ -12,7 +12,7 @@ import com.sidewayscoding.Mergeable
  *  than one that has no obvious bugs) so it can be used to test more advanced
  *  implementations.
  */
-class MergeableListMultiset[A : Mergeable] private[immutable] (val delegate: Map[A, Int]) extends MultisetLike[A, MergeableListMultiset[A]] {
+class MergeableListMultiset[A : Mergeable] private[immutable] (val delegate: Map[A, Int]) extends Multiset[A] with MultisetLike[A, MergeableListMultiset[A]] {
 
   import MergeableListMultiset._
 
@@ -49,7 +49,7 @@ class MergeableListMultiset[A : Mergeable] private[immutable] (val delegate: Map
 
 }
 
-object MergeableListMultiset {
+object MergeableListMultiset extends ImmutableMultisetFactory[MergeableListMultiset] {
 
   implicit def canBuildFrom[A : Mergeable]: CanBuildFrom[MergeableListMultiset[_], A, MergeableListMultiset[A]] = 
     new CanBuildFrom[MergeableListMultiset[_], A, MergeableListMultiset[A]] {
@@ -63,7 +63,7 @@ object MergeableListMultiset {
 
   def apply[A : Mergeable](): MergeableListMultiset[A] =
     new MergeableListMultiset[A](Map[A,Int]())
-
+   
 }
     
 class MergeableListMultisetBuilder[A : Mergeable ] extends Builder[A, MergeableListMultiset[A]] {
