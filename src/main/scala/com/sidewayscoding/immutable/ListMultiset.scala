@@ -6,6 +6,18 @@ import scala.collection.mutable.Builder
 import scala.collection.generic.CanBuildFrom
 import com.sidewayscoding.Multiset
 
+/**
+ * @author mads379
+ */
+object ListMultiset extends ImmutableMultisetFactory[ListMultiset] {
+  
+  def empty[A] = apply()
+  
+  def apply[A](): ListMultiset[A] = 
+    new ListMultiset[A](Map[A,List[A]]())
+  
+}
+
 class ListMultiset[A] private[immutable] (val delegate: Map[A, List[A]]) extends Multiset[A]
                                                                             with MultisetLike[A, ListMultiset[A]] {
   
@@ -27,8 +39,7 @@ class ListMultiset[A] private[immutable] (val delegate: Map[A, List[A]]) extends
 
   def +(a: A) = {
     val newList = a :: delegate.getOrElse(a, Nil)
-    val newDelegate = delegate.updated(a, newList)
-    new ListMultiset(delegate)
+    new ListMultiset(delegate.updated(a, newList))
   }
 
   def -(a: A) = {
@@ -47,47 +58,13 @@ class ListMultiset[A] private[immutable] (val delegate: Map[A, List[A]]) extends
   
 }
 
-/**
- * @author mads379
- */
-object ListMultiset extends ImmutableMultisetFactory[ListMultiset] {
-  
-  implicit def canBuildFrom[A]: CanBuildFrom[ListMultiset[_], A, ListMultiset[A]] = 
-    new CanBuildFrom[ListMultiset[_], A, ListMultiset[A]] {
-      def apply(): Builder[A, ListMultiset[A]] = newBuilder
-      def apply(from: ListMultiset[_]): Builder[A, ListMultiset[A]] = newBuilder
-    }
-  
-  def newBuilder[A]: Builder[A, ListMultiset[A]] = new ListMultisetBuilder[A]
-  
-  def apply[A](): ListMultiset[A] = 
-    new ListMultiset[A](Map[A,List[A]]())
-  
-}
-
-private class ListMultisetBuilder[A] extends Builder[A, ListMultiset[A]] {
-
-  private var delegate: Map[A, List[A]] = Map[A,List[A]]()
-
-  def +=(a: A): this.type = {
-    val newList = a :: delegate.getOrElse(a, Nil)
-    delegate = delegate.updated(a, newList)
-    this
-  }
-  
-  def clear() = { delegate = Map[A,List[A]]() }
-  
-  def result = new ListMultiset[A](delegate)
-  
-}
-
 private class ListMultisetIterator[A](private val tm: Map[A, List[A]]) extends Iterator[A] {
   
   private val mapIterator = tm.iterator
   private var listIterator: Option[Iterator[A]] = None
   
   def hasNext: Boolean = {
-	listIterator.map(_.hasNext).getOrElse(false) || mapIterator.hasNext
+    listIterator.map(_.hasNext).getOrElse(false) || mapIterator.hasNext
   }
   
   override def next(): A = {

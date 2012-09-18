@@ -1,12 +1,26 @@
 package com.sidewayscoding.immutable
 
-import com.sidewayscoding.{ MultisetLike }
-import scala.collection.mutable.Builder
 import com.sidewayscoding.Multiset
+import com.sidewayscoding.MultisetLike
+import com.sidewayscoding.MultisetBuilder
+import scala.collection.mutable.Builder
+import scala.collection.generic.CanBuildFrom
 
 abstract class ImmutableMultisetFactory[CC[X] <: Multiset[X] with MultisetLike[X, CC[X]]] {
- 
-	// TODO: Add the code that MergeableListMultiset and ListMultiset have in common here. See the 
-	// 		 how the Scala team has done it. We might have a problem because we want to enfore a 
-	//       constraint (again, see how TreeMap enforces Ordering)   
-}
+
+  type Coll = CC[_]
+
+  def empty[A]: CC[A]
+
+  def apply[A](elems: A*): CC[A] = (newBuilder[A] ++= elems).result
+
+  def newBuilder[A]: Builder[A, CC[A]] = new MultisetBuilder[A, CC[A]](empty)
+
+  implicit def newCanBuildFrom[A]: CanBuildFrom[Coll, A, CC[A]] = new MultisetCanBuildFrom();
+
+  class MultisetCanBuildFrom[A] extends CanBuildFrom[Coll, A, CC[A]] {
+    def apply(from: Coll) = newBuilder[A]
+    def apply() = newBuilder[A]
+  }
+
+ }

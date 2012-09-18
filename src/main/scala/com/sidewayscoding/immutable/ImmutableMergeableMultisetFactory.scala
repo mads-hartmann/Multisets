@@ -17,9 +17,9 @@ abstract class ImmutableMergeableMultisetFactory[CC[A] <: MergeableMultiset[A] w
 
   def newBuilder[A](implicit mergeable: Mergeable[A]): Builder[A, CC[A]] = new MultisetBuilder[A, CC[A]](empty)
 
-  implicit def newCanBuildFrom[A](implicit mergeable: Mergeable[A]) : CanBuildFrom[Coll, A, CC[A]] = new SortedSetCanBuildFrom()(mergeable);
+  implicit def newCanBuildFrom[A](implicit mergeable: Mergeable[A]) : CanBuildFrom[Coll, A, CC[A]] = new MergeableMultisetCanBuildFrom()(mergeable);
 
-  class SortedSetCanBuildFrom[A](implicit mergeable: Mergeable[A]) extends CanBuildFrom[Coll, A, CC[A]] {
+  class MergeableMultisetCanBuildFrom[A](implicit mergeable: Mergeable[A]) extends CanBuildFrom[Coll, A, CC[A]] {
     def apply(from: Coll) = newBuilder[A](mergeable)
     def apply() = newBuilder[A](mergeable)
   }
