@@ -25,13 +25,13 @@ class ListMultiset[A] private[immutable] (val delegate: Map[A, List[A]]) extends
     delegate.get(a).map( _.size ).getOrElse(0)
   }
 
-  def insert(a: A) = {
+  def +(a: A) = {
     val newList = a :: delegate.getOrElse(a, Nil)
     val newDelegate = delegate.updated(a, newList)
     new ListMultiset(delegate)
   }
 
-  def remove(a: A) = {
+  def -(a: A) = {
     if (delegate.contains(a)) {
       val list = delegate.get(a).get
       val newList = list - a
