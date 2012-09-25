@@ -22,11 +22,11 @@ object MergeableListMultiset extends ImmutableMergeableMultisetFactory[Mergeable
  *  than one that has no obvious bugs) so it can be used to test more advanced
  *  implementations.
  */
-class MergeableListMultiset[A] private[immutable] (val delegate: Map[A, Int]) extends MergeableMultiset[A] 
+class MergeableListMultiset[A] private[immutable] (val delegate: Map[A, Int]) extends MergeableMultiset[A]
                                                                                  with MergeableMultisetLike[A, MergeableListMultiset[A]] {
 
   def withMultiplicity = delegate.toIterable
-  
+
   def empty = MergeableListMultiset.empty
 
   def iterator: Iterator[A] = new MergeableListMultisetIterator(delegate)

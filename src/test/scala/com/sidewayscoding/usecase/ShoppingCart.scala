@@ -8,10 +8,10 @@ object ShoppingCart {
    * Data has been taken from http://www.freebase.com/view/book/book_edition
    */
 
-  case class Book(name: String, 
-                  creditedTo: Option[String], 
-                  publisher: Option[String], 
-                  publicationYear: Option[Int], 
+  case class Book(name: String,
+                  creditedTo: Option[String],
+                  publisher: Option[String],
+                  publicationYear: Option[Int],
                   binding: Option[String])
 
   def main(args: Array[String]) {
@@ -25,13 +25,13 @@ object ShoppingCart {
       ,Book("On Lisp", None, Some("Prentice Hall"), Some(1993), Some("Paperback"))
     )
 
-    
-    println("Shopping cart contents")    
+
+    println("Shopping cart contents")
     println(shoppingCart.withMultiplicity.map( (a: Tuple2[Book, Int]) => {
       val (book, count) = a
       "item: %s, count: %s".format(book.name, count)
     }).mkString("\n"))
 
   }
-  
+
 }

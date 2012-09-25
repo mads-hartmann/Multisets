@@ -9,19 +9,19 @@ import com.sidewayscoding.Multiset
  * @author mads379
  */
 object ListMultiset extends ImmutableMultisetFactory[ListMultiset] {
-  
+
   def empty[A] = apply()
-  
-  def apply[A](): ListMultiset[A] = 
+
+  def apply[A](): ListMultiset[A] =
     new ListMultiset[A](Map[A,List[A]]())
-  
+
 }
 
 class ListMultiset[A] private[immutable] (val delegate: Map[A, List[A]]) extends Multiset[A]
                                                                             with MultisetLike[A, ListMultiset[A]] {
-  
+
   def empty = new ListMultiset[A](Map[A, List[A]]())
-  
+
   def iterator: Iterator[A] = new ListMultisetIterator(delegate)
 
   override def newBuilder: Builder[A, ListMultiset[A]] = ListMultiset.newBuilder
@@ -52,18 +52,18 @@ class ListMultiset[A] private[immutable] (val delegate: Map[A, List[A]]) extends
       this
     }
   }
-  
+
 }
 
 private class ListMultisetIterator[A](private val tm: Map[A, List[A]]) extends Iterator[A] {
-  
+
   private val mapIterator = tm.iterator
   private var listIterator: Option[Iterator[A]] = None
-  
+
   def hasNext: Boolean = {
     listIterator.map(_.hasNext).getOrElse(false) || mapIterator.hasNext
   }
-  
+
   override def next(): A = {
     if (listIterator.map(_.hasNext).getOrElse(false)) {
       listIterator.get.next
@@ -75,5 +75,5 @@ private class ListMultisetIterator[A](private val tm: Map[A, List[A]]) extends I
       throw new NoSuchElementException("next on empty iterator")
     }
   }
-  
+
 }
