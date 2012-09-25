@@ -25,6 +25,8 @@ object MergeableListMultiset extends ImmutableMergeableMultisetFactory[Mergeable
 class MergeableListMultiset[A] private[immutable] (val delegate: Map[A, Int]) extends MergeableMultiset[A] 
                                                                                  with MergeableMultisetLike[A, MergeableListMultiset[A]] {
 
+  def withMultiplicity = delegate.toIterable
+  
   def empty = MergeableListMultiset.empty
 
   def iterator: Iterator[A] = new MergeableListMultisetIterator(delegate)

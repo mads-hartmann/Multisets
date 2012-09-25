@@ -1,4 +1,4 @@
-package com.sidewayscoding
+package com.sidewayscoding.usecase
 
 import com.sidewayscoding.immutable.ListMultiset
 import com.sidewayscoding.immutable.MergeableListMultiset
