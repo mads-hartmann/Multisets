@@ -11,12 +11,17 @@ object Examples {
     
     val ms2: ListMultiset[String] = ms.map(_.toString)
     
-    val l = MergeableListMultiset(1,2,3,4,5,6)
+    val l = MergeableListMultiset(1,2,3,4,5,6) 
     
     println(l)
     println(ms)
     
     val l2: MergeableListMultiset[String] = l.map( _.toString )
+    
+    val l3 = MergeableListMultiset(("hey",10), ("you", 2))
+    
+    println(l3)
+    
   }
 
 }

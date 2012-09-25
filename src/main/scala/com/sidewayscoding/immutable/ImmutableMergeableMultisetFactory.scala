@@ -6,20 +6,29 @@ import scala.collection.mutable.Builder
 import scala.collection.generic.CanBuildFrom
 import com.sidewayscoding.MultisetBuilder
 
-abstract class ImmutableMergeableMultisetFactory[CC[A] <: MergeableMultiset[A] with MergeableMultisetLike[A, CC[A]]] {
+abstract class ImmutableMergeableMultisetFactory[CC[A] <: MergeableMultiset[A] with MergeableMultisetLike[A, CC[A]]]
+       extends ImmutableMultisetFactory[CC] {
 
-  type Coll = CC[_]
-
-  def empty[A]: CC[A]
-
-  def apply[A](elems: A*): CC[A] = (newBuilder[A] ++= elems).result
-
-  def newBuilder[A]: Builder[A, CC[A]] = new MultisetBuilder[A, CC[A]](empty)
-
-  implicit def newCanBuildFrom[A]: CanBuildFrom[Coll, A, CC[A]] = new MergeableMultisetCanBuildFrom();
-
-  class MergeableMultisetCanBuildFrom[A] extends CanBuildFrom[Coll, A, CC[A]] {
-    def apply(from: Coll) = newBuilder[A]
-    def apply() = newBuilder[A]
+  def apply[X: ClassManifest, A](elems: (A, Int)*): CC[A] = (newTupleBuilder[A] ++= elems).result
+  
+  private def newTupleBuilder[A]: Builder[(A, Int), CC[A]] = new MergeabeMultisetBuilder[A, CC[A]](empty) 
+  
+  private class MergeabeMultisetBuilder[A, Coll <: MergeableMultiset[A] with MergeableMultisetLike[A, Coll]](empty: Coll) 
+        extends Builder[(A, Int), Coll] {
+    
+    protected var elems: Coll = empty
+    
+    def += (t: (A, Int)): this.type = { 
+      val (x, c) = t
+      (0 until c).foreach { _ =>
+        elems = elems + x
+      }
+      this
+    }
+    
+    def clear() { elems = empty }
+    def result: Coll = elems
   }
+ 
+  
 }
