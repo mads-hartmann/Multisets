@@ -2,7 +2,6 @@ package com.sidewayscoding.immutable
 
 import com.sidewayscoding.MergeableMultiset
 import com.sidewayscoding.MergeableMultisetLike
-import com.sidewayscoding.Mergeable
 import scala.collection.mutable.Builder
 import scala.collection.generic.CanBuildFrom
 import com.sidewayscoding.MultisetBuilder
@@ -11,16 +10,16 @@ abstract class ImmutableMergeableMultisetFactory[CC[A] <: MergeableMultiset[A] w
 
   type Coll = CC[_]
 
-  def empty[A](implicit mergeable: Mergeable[A]): CC[A]
+  def empty[A]: CC[A]
 
-  def apply[A](elems: A*)(implicit mergeable: Mergeable[A]): CC[A] = (newBuilder[A](mergeable) ++= elems).result
+  def apply[A](elems: A*): CC[A] = (newBuilder[A] ++= elems).result
 
-  def newBuilder[A](implicit mergeable: Mergeable[A]): Builder[A, CC[A]] = new MultisetBuilder[A, CC[A]](empty)
+  def newBuilder[A]: Builder[A, CC[A]] = new MultisetBuilder[A, CC[A]](empty)
 
-  implicit def newCanBuildFrom[A](implicit mergeable: Mergeable[A]) : CanBuildFrom[Coll, A, CC[A]] = new MergeableMultisetCanBuildFrom()(mergeable);
+  implicit def newCanBuildFrom[A]: CanBuildFrom[Coll, A, CC[A]] = new MergeableMultisetCanBuildFrom();
 
-  class MergeableMultisetCanBuildFrom[A](implicit mergeable: Mergeable[A]) extends CanBuildFrom[Coll, A, CC[A]] {
-    def apply(from: Coll) = newBuilder[A](mergeable)
-    def apply() = newBuilder[A](mergeable)
+  class MergeableMultisetCanBuildFrom[A] extends CanBuildFrom[Coll, A, CC[A]] {
+    def apply(from: Coll) = newBuilder[A]
+    def apply() = newBuilder[A]
   }
 }

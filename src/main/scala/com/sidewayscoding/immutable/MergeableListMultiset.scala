@@ -3,15 +3,14 @@ package com.sidewayscoding.immutable
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable.Builder
 
-import com.sidewayscoding.Mergeable
 import com.sidewayscoding.MergeableMultiset
 import com.sidewayscoding.MergeableMultisetLike
 
 object MergeableListMultiset extends ImmutableMergeableMultisetFactory[MergeableListMultiset] {
 
-  def empty[A: Mergeable] = apply()
+  def empty[A] = apply()
 
-  def apply[A : Mergeable](): MergeableListMultiset[A] =
+  def apply[A](): MergeableListMultiset[A] =
     new MergeableListMultiset[A](Map[A,Int]())
 
 }
@@ -23,8 +22,8 @@ object MergeableListMultiset extends ImmutableMergeableMultisetFactory[Mergeable
  *  than one that has no obvious bugs) so it can be used to test more advanced
  *  implementations.
  */
-class MergeableListMultiset[A] private[immutable] (val delegate: Map[A, Int])(implicit val mergeable: Mergeable[A]) extends MergeableMultiset[A] 
-                                                                                                                       with MergeableMultisetLike[A, MergeableListMultiset[A]] {
+class MergeableListMultiset[A] private[immutable] (val delegate: Map[A, Int]) extends MergeableMultiset[A] 
+                                                                                 with MergeableMultisetLike[A, MergeableListMultiset[A]] {
 
   def empty = MergeableListMultiset.empty
 
@@ -59,7 +58,7 @@ class MergeableListMultiset[A] private[immutable] (val delegate: Map[A, Int])(im
 
 }
 
-class MergeableListMultisetIterator[A : Mergeable](private val tm: Map[A, Int]) extends Iterator[A] {
+class MergeableListMultisetIterator[A](private val tm: Map[A, Int]) extends Iterator[A] {
 
   private[this] val mapIterator = tm.iterator
   private[this] var indexInElement = 1

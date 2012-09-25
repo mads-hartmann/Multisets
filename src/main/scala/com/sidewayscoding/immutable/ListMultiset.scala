@@ -1,6 +1,5 @@
 package com.sidewayscoding.immutable
 
-import com.sidewayscoding.Mergeable
 import com.sidewayscoding.MultisetLike
 import scala.collection.mutable.Builder
 import scala.collection.generic.CanBuildFrom
