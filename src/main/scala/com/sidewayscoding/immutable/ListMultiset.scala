@@ -26,8 +26,6 @@ class ListMultiset[A] private[immutable] (val delegate: Map[A, List[A]]) extends
 
   override def newBuilder: Builder[A, ListMultiset[A]] = ListMultiset.newBuilder
 
-  def seq: ListMultiset[A] = this
-
   override def size: Int = {
     delegate.map( _._2.size ).sum
   }

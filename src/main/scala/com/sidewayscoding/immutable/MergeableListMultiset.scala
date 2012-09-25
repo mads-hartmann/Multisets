@@ -31,8 +31,6 @@ class MergeableListMultiset[A] private[immutable] (val delegate: Map[A, Int]) ex
 
   override def newBuilder: Builder[A, MergeableListMultiset[A]] = MergeableListMultiset.newBuilder
 
-  def seq: MergeableListMultiset[A] = this
-
   override def size: Int = delegate.values.sum
 
   def multiplicity(a: A): Int = delegate.get(a).getOrElse(0)
