@@ -25,7 +25,6 @@ object ShoppingCart {
       ,Book("On Lisp", None, Some("Prentice Hall"), Some(1993), Some("Paperback"))
     )
 
-
     println("Shopping cart contents")
     println(shoppingCart.withMultiplicity.map( (a: Tuple2[Book, Int]) => {
       val (book, count) = a
