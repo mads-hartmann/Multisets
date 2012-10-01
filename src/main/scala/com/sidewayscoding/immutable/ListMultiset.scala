@@ -10,17 +10,12 @@ import com.sidewayscoding.Multiset
  */
 object ListMultiset extends ImmutableMultisetFactory[ListMultiset] {
 
-  def empty[A] = apply()
-
-  def apply[A](): ListMultiset[A] =
-    new ListMultiset[A](Map[A,List[A]]())
+  override def empty[A] = new ListMultiset[A](Map[A, List[A]]())
 
 }
 
 class ListMultiset[A] private[immutable] (val delegate: Map[A, List[A]]) extends Multiset[A]
                                                                             with MultisetLike[A, ListMultiset[A]] {
-
-  def empty = new ListMultiset[A](Map[A, List[A]]())
 
   def iterator: Iterator[A] = new ListMultisetIterator(delegate)
 

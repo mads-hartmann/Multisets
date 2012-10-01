@@ -7,7 +7,7 @@ object Examples {
 
   def main(args: Array[String]) {
 
-    val ms = ListMultiset(1,2,3,4,5,4,3,2)
+    val ms: ListMultiset[Int] = ListMultiset(1,2,3,4,5,4,3,2)
 
     val ms2: ListMultiset[String] = ms.map(_.toString)
 

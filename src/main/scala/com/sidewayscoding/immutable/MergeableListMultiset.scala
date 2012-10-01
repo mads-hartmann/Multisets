@@ -2,13 +2,15 @@ package com.sidewayscoding.immutable
 
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable.Builder
-
 import com.sidewayscoding.MergeableMultiset
 import com.sidewayscoding.MergeableMultisetLike
+import scala.collection.generic.GenericCompanion
+import com.sidewayscoding.GenericMultisetTemplate
+import com.sidewayscoding.Multiset
 
 object MergeableListMultiset extends ImmutableMergeableMultisetFactory[MergeableListMultiset] {
 
-  def empty[A] = apply()
+  override def empty[A] = apply()
 
   def apply[A](): MergeableListMultiset[A] =
     new MergeableListMultiset[A](Map[A,Int]())
@@ -23,11 +25,12 @@ object MergeableListMultiset extends ImmutableMergeableMultisetFactory[Mergeable
  *  implementations.
  */
 class MergeableListMultiset[A] private[immutable] (val delegate: Map[A, Int]) extends MergeableMultiset[A]
-                                                                                 with MergeableMultisetLike[A, MergeableListMultiset[A]] {
+                                                                                 with MergeableMultisetLike[A, MergeableListMultiset[A]]
+                                                                                 with GenericMultisetTemplate[A, MergeableListMultiset]{
 
   def withMultiplicity = delegate.toIterable
 
-  def empty = MergeableListMultiset.empty
+  override def companion: GenericCompanion[MergeableListMultiset] = MergeableListMultiset
 
   def iterator: Iterator[A] = new MergeableListMultisetIterator(delegate)
 
