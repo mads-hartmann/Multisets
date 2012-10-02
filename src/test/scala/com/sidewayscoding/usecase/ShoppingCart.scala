@@ -17,7 +17,7 @@ object ShoppingCart {
   def main(args: Array[String]) {
 
     var shoppingCart = MergeableListMultiset[Book](
-      Book("Brave New Words: The Oxford Dictionary of Science Fiction", Some("Jeff Prucher"), Some("Oxford University Press"), Some(2007), Some("Hardcover"))
+       Book("Brave New Words: The Oxford Dictionary of Science Fiction", Some("Jeff Prucher"), Some("Oxford University Press"), Some(2007), Some("Hardcover"))
       ,Book("On Lisp", None, Some("Prentice Hall"), Some(1993), Some("Paperback"))
       ,Book("The Logic of Failure: Why Things Go Wrong and What We Can Do to Make Them Right", None, Some("Perseus Books Group"), Some(1996), Some("Paperback"))
       ,Book("The Immaculate Conception", None, Some("House of Anansi Press"), Some(2006), None)

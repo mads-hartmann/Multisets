@@ -3,20 +3,20 @@ package com.sidewayscoding.immutable
 import com.sidewayscoding.MultisetLike
 import scala.collection.mutable.Builder
 import scala.collection.generic.CanBuildFrom
-import com.sidewayscoding.Multiset
+import scala.collection.immutable.ListMap
 
 /**
  * @author mads379
  */
 object ListMultiset extends ImmutableMultisetFactory[ListMultiset] {
 
-  override def empty[A] = new ListMultiset[A](Map[A, List[A]]())
+  override def empty[A] = new ListMultiset[A](ListMap[A, List[A]]())
   implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, ListMultiset[A]] = multisetCanBuildFrom[A]
 
 }
 
-class ListMultiset[A] private[immutable] (val delegate: Map[A, List[A]]) extends Multiset[A]
-                                                                            with MultisetLike[A, ListMultiset[A]] {
+class ListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]]) extends Multiset[A]
+                                                                                with MultisetLike[A, ListMultiset[A]] {
 
   def iterator: Iterator[A] = new ListMultisetIterator(delegate)
 
@@ -51,7 +51,7 @@ class ListMultiset[A] private[immutable] (val delegate: Map[A, List[A]]) extends
 
 }
 
-private class ListMultisetIterator[A](private val tm: Map[A, List[A]]) extends Iterator[A] {
+private class ListMultisetIterator[A](private val tm: ListMap[A, List[A]]) extends Iterator[A] {
 
   private val mapIterator = tm.iterator
   private var listIterator: Option[Iterator[A]] = None

@@ -1,11 +1,9 @@
-package com.sidewayscoding
-
-import com.sidewayscoding.immutable.ListMultiset
+package com.sidewayscoding.immutable
 import scala.collection.GenIterable
 import scala.collection.generic.GenericCompanion
-import scala.collection.generic.GenericTraversableTemplate
-import com.sidewayscoding.immutable.ImmutableMultisetFactory
 import scala.collection.generic.CanBuildFrom
+import com.sidewayscoding.MultisetLike
+import com.sidewayscoding.GenericMultisetTemplate
 
 trait Multiset[A] extends Iterable[A]
                      with MultisetLike[A, Multiset[A]]

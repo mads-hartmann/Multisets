@@ -6,7 +6,6 @@ import com.sidewayscoding.MergeableMultiset
 import com.sidewayscoding.MergeableMultisetLike
 import scala.collection.generic.GenericCompanion
 import com.sidewayscoding.GenericMultisetTemplate
-import com.sidewayscoding.Multiset
 
 object MergeableListMultiset extends ImmutableMergeableMultisetFactory[MergeableListMultiset] {
 

@@ -1,6 +1,5 @@
 package com.sidewayscoding.immutable
 
-import com.sidewayscoding.Multiset
 import com.sidewayscoding.MultisetLike
 import com.sidewayscoding.MultisetBuilder
 import scala.collection.mutable.Builder

@@ -2,12 +2,16 @@ package com.sidewayscoding
 
 import scala.collection.{ IterableLike }
 import scala.collection.GenIterableLike
+import com.sidewayscoding.immutable.Multiset
+import scala.collection.generic.CanBuildFrom
 
 /**
  * Interface for all Multiset implementations.
  */
-trait MultisetLike[A, +This <: Multiset[A] with MultisetLike[A, This]] extends IterableLike[A, This] 
+trait MultisetLike[A, +This <: Multiset[A] with MultisetLike[A, This]] extends IterableLike[A, This]
                                                                           with GenIterableLike[A, This]{
+
+  self =>
 
   def multiplicity(a: A): Int
 
@@ -22,8 +26,14 @@ trait MultisetLike[A, +This <: Multiset[A] with MultisetLike[A, This]] extends I
    *  @return  a new multiset consisting of all elements that are both in this
    *  multiset and in the given multiset `that`.
    */
-  def intersect(that: Multiset[A]): This =
-    this filter (itm => that.multiplicity(itm) > 0)
+  def intersect(that: Multiset[A]): This = {
+    val thisInThat = this.filter( itm => that.multiplicity(itm) > 0)
+    val thatInThis = that.filter( itm => this.multiplicity(itm) > 0)
+    val b = self.newBuilder
+    b ++= thisInThat
+    b ++= thatInThis
+    b.result
+  }
 
   /**
    * Computes the union of this multiset and another multiset.
