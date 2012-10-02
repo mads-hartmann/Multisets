@@ -12,8 +12,8 @@ abstract class ImmutableMultisetFactory[CC[X] <: Multiset[X] with MultisetLike[X
 
   override def newBuilder[A]: Builder[A, CC[A]] = new MultisetBuilder[A, CC[A]](empty[A])
 
-  implicit def newCanBuildFrom[A]: CanBuildFrom[Coll, A, CC[A]] = new CanBuildFrom[Coll, A, CC[A]] {
-    def apply(from: Coll) = newBuilder[A]
+  implicit def newCanBuildFrom[A]: CanBuildFrom[CC[_], A, CC[A]] = new CanBuildFrom[Coll, A, CC[A]] {
+    def apply(from: CC[_]) = newBuilder[A]
     def apply() = newBuilder[A]
   }
 
