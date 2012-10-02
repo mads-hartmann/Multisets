@@ -11,6 +11,7 @@ import com.sidewayscoding.Multiset
 object MergeableListMultiset extends ImmutableMergeableMultisetFactory[MergeableListMultiset] {
 
   override def empty[A] = apply()
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, MergeableListMultiset[A]] = multisetCanBuildFrom[A]
 
   def apply[A](): MergeableListMultiset[A] =
     new MergeableListMultiset[A](Map[A,Int]())

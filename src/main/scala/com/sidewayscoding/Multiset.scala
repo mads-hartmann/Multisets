@@ -5,6 +5,7 @@ import scala.collection.GenIterable
 import scala.collection.generic.GenericCompanion
 import scala.collection.generic.GenericTraversableTemplate
 import com.sidewayscoding.immutable.ImmutableMultisetFactory
+import scala.collection.generic.CanBuildFrom
 
 trait Multiset[A] extends Iterable[A]
                      with MultisetLike[A, Multiset[A]]
@@ -19,6 +20,7 @@ trait Multiset[A] extends Iterable[A]
 object Multiset extends ImmutableMultisetFactory[Multiset] {
 
   /*TODO: We probably don't want to use this as the default implementation. */
-  override def empty[A] = ListMultiset[A]()
+  override def empty[A]: Multiset[A] = ListMultiset[A]()
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Multiset[A]] = multisetCanBuildFrom[A]
 
 }

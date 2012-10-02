@@ -11,6 +11,7 @@ import com.sidewayscoding.Multiset
 object ListMultiset extends ImmutableMultisetFactory[ListMultiset] {
 
   override def empty[A] = new ListMultiset[A](Map[A, List[A]]())
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, ListMultiset[A]] = multisetCanBuildFrom[A]
 
 }
 
