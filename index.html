@@ -39,7 +39,7 @@
 
 object MyProject extends Build {
   lazy val root = Project("project", file(".")) dependsOn(multi)
-  lazy val multi = uri("git://github.com/mads379/multisets")
+  lazy val multi = uri("git://github.com/mads379/Multisets")
 }</code></pre>
         <h3>Examples</h3>
         <p>There are currently two different kinds of Multisets as we make a distinction between Multisets that contain elements that can be merged and those that don't. The two multisets are called <code>Multiset</code> and <code>MergeableMultiset</code> where, as the name suggests, MergeableMultiset will keep <em>one</em> element in the data structures together with a counter and Multiset will keep all elements.</p>
