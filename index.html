@@ -28,32 +28,92 @@
         </ul>
       </header>
       <section>
-        <h3>Welcome to GitHub Pages.</h3>
+        <h3>Description</h3>
+        <p>The collection classes in the standard library of the <a href="http://www.scala-lang.org">Scala programming language</a> has sequences, sets, maps, and several other collection types, but it does not currently have <strong>Multisets</strong>. The goal of the project is to write, document and test a complete set of APIs and implementations of Multisets that fit seamlessly into the Scala collection library. Both immutable and mutable versions of Multisets will be developed and various implementations will be compared using empirical data of their performance. The goal is to submit a SIP document adding Multisets to Scala at the end of the project and as such comprehensive testing is required.</p>
+        <p>The project is by Mads Hartmann Jensen under the supervision of Ken Friis Mikkelsen (DIKU) and external supervision from Aleksandar Prokopec (EPFL).</p>
+        <h3>Status</h3>
+        <p>The project is still in the early stages of development so please don't use it for anything serious but please feel encouraged to try it out and suggest improvements.</p>
+        <h3>Getting Started</h3>
+        <p>Currently the artifacts aren't published anywhere so if you want to try it out you have to depend on the source directly from this git repository. You can do so by putting the following in your <code>project/Build.scala</code> file.</p>
+        <pre><code>import sbt._
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+object MyProject extends Build {
+  lazy val root = Project("project", file(".")) dependsOn(multi)
+  lazy val multi = uri("git://github.com/mads379/multisets")
+}</code></pre>
+        <h3>Examples</h3>
+        <p>There are currently two different kinds of Multisets as we make a distinction between Multisets that contain elements that can be merged and those that don't. The two multisets are called <code>Multiset</code> and <code>MergeableMultiset</code> where, as the name suggests, MergeableMultiset will keep <em>one</em> element in the data structures together with a counter and Multiset will keep all elements.</p>
+        <p>The following example shows a use-case where it makes sense to use a MergeableMultiset as the equals method on <code>book</code> takes all properties into consideration, i.e. no information is lost if we just keep one object in the data structure. The program simply prints a histogram of a series of books.</p>
+        <pre><code>import com.sidewayscoding.immutable.MergeableListMultiset
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+object ShoppingCart {
+  
+  case class Book(name: String,
+                  creditedTo: Option[String],
+                  publisher: Option[String],
+                  publicationYear: Option[Int],
+                  binding: Option[String])
+  
+  def main(args: Array[String]) {
+    var shoppingCart = MergeableListMultiset[Book](
+       Book("Brave New Words: The Oxford Dictionary of Science Fiction", Some("Jeff Prucher"), Some("Oxford University Press"), Some(2007), Some("Hardcover"))
+      ,Book("On Lisp", None, Some("Prentice Hall"), Some(1993), Some("Paperback"))
+      ,Book("The Logic of Failure: Why Things Go Wrong and What We Can Do to Make Them Right", None, Some("Perseus Books Group"), Some(1996), Some("Paperback"))
+      ,Book("The Immaculate Conception", None, Some("House of Anansi Press"), Some(2006), None)
+      ,Book("Bluebeard", Some("Kurt Vonnegut, Jr."), Some("Delacorte Press"), Some(1987), Some("Hardcover"))
+      ,Book("On Lisp", None, Some("Prentice Hall"), Some(1993), Some("Paperback"))
+    )
+    
+    val histogram = shoppingCart.withMultiplicity.map { 
+      case (books, count) => "item: %s, count: %s".format(books.head.name, count)
+    }
+    
+    println("Shopping cart contents")
+    println(histogram.mkString("\n"))
+  }
+}</code></pre>
+<p>Another example is finding files with the same name in different directories in your hard-disk. We choose to model a file as a <code>case class</code> with the <code>filename</code> and the <code>path</code> but we define <code>equals</code> such that it only relies on the filename. In this case we don't want to use a MergeableMultiset we would loose important information (the path).</p>
+<pre><code>import com.sidewayscoding.immutable.Multiset
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+object DuplicateFileNames {
+  def main(args: Array[String]) {
+    
+    case class FileName(name: String, path: List[String]) {
+      override def equals(o: Any) = {
+        o match {
+          case x: FileName => x.name == name
+          case _ => false
+        }
+      }
+    }
+    
+    val fakeDirPath = List("~", "fake", "dir")
+    val tmpDirPath = List("~", "tmp", "dir")
 
-<h3>Designer Templates</h3>
+    val folderOne = Multiset(
+      FileName("log1.txt", fakeDirPath),
+      FileName("log2.txt", fakeDirPath),
+      FileName("log3.txt", fakeDirPath),
+      FileName("log4.txt", fakeDirPath))
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+    val folderTwo = Multiset(
+      FileName("log1.txt",tmpDirPath),
+      FileName("cat-image1.jpg", tmpDirPath),
+      FileName("cat-image2.jpg", tmpDirPath),
+      FileName("cat-image3.jpg", tmpDirPath),
+      FileName("cat-image4.jpg", tmpDirPath))
 
-<h3>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+    val duplicates = folderOne intersect folderTwo
+    
+    println("Found the following duplicates:")
+    duplicates.foreach { d => 
+      println("\t%s".format(d.path))
+    }
+    
+  }
+}</code></pre>
+        <h3>Feedback</h3>
+        <p>If you have any suggestions then please open an issue on the <a href="https://github.com/mads379/Multisets">github project</a> so it can be discussed publicly.</p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/mads379">mads379</a></p>
