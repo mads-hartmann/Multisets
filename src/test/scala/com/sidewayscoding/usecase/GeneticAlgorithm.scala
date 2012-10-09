@@ -61,8 +61,7 @@ object GeneticAlgorithm extends App {
 
   val best = population.minBy(p => p.fitness)
 
-  println("Did %s generations with an initial population of %s".format(N, initialPopulation))
-  println("")
+  println("Did %s generations with an initial population of %s\n".format(N, initialPopulation))
   println("The best solutions have a round-trip cost of: %s and can be acheived using".format(best.fitness))
 
   population.filter( s => s.fitness == best.fitness).foreach { s =>
@@ -71,27 +70,30 @@ object GeneticAlgorithm extends App {
 
   println("")
 
+  // The `toList` here is a bit annoying but you can't sort an `Iterable`.
   population.withMultiplicity.toList.sortBy( tup => tup._1.head.fitness).foreach {
     case (elems, mult) => println("Fitness: %f\tcount: %s\tsolution:%s\tgenerations: %s".format(
         elems.head.fitness,
         mult,
-        elems.head.seq.map( p => "(%s,%S)".format(p.x,p.y)).mkString(";"),
+        elems.head.seq.map( p => "(%s,%s)".format(p.x,p.y)).mkString(";"),
         elems.map(_.generation).mkString(",")
        ))
   }
 
-  /**
+  /** 
    * Mutation is the generic name given to those variation operators that use
    * only one parent and create one child by applying some kind of randomized
    * change to the representation. In our case we're using Inversion Mutation.
    *
    * Inversion mutation works by randomly selecting two positions in the string
    * and reversing the order in which the values appear between those positions.
+   * 
+   * - Introduction to Evolutionary Computing
    */
   def mutation(s1: Solution): Solution = {
 
     val half = Math.ceil(s1.seq.size / 2).toInt
-    val startIndex = Random.nextInt(half) // it's not inclusive so no reason to -1
+    val startIndex = Random.nextInt(half)
     val endIndex = (startIndex + half)
 
     val (before, segment, after) = {
@@ -124,6 +126,8 @@ object GeneticAlgorithm extends App {
    *    the remaining unused numbers into the first child in the order that
    *    they appear in the second parent, wrapping around at the end of the
    *    list
+   *
+   * - Introduction to Evolutionary Computing (modified a bit)
    */
   def crossover(s1: Solution, s2: Solution): Seq[Point] = {
 
@@ -132,7 +136,7 @@ object GeneticAlgorithm extends App {
     // (size/2) elements to the right of that.
 
     val half = Math.ceil(s1.seq.size / 2).toInt
-    val startIndex = Random.nextInt(half) // it's not inclusive so no reason to -1
+    val startIndex = Random.nextInt(half)
     val endIndex = (startIndex + half)
 
     def createOffspring(parent1: Seq[Point], parent2: Seq[Point]) = {
