@@ -18,6 +18,8 @@ object ListMultiset extends ImmutableMultisetFactory[ListMultiset] {
 class ListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]]) extends Multiset[A]
                                                                                 with MultisetLike[A, ListMultiset[A]] {
 
+  def withMultiplicity = delegate.toIterable.map{ case (_,itms) => (itms, itms.size) }
+  
   def iterator: Iterator[A] = new ListMultisetIterator(delegate)
 
   override def newBuilder: Builder[A, ListMultiset[A]] = ListMultiset.newBuilder

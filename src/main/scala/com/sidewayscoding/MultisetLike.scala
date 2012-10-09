@@ -19,6 +19,8 @@ trait MultisetLike[A, +This <: Multiset[A] with MultisetLike[A, This]] extends I
 
   def -(a: A): This
 
+  def withMultiplicity: Iterable[(Seq[A], Int)]
+
   /**
    * Computes the intersection between this multiset and another multiset.
    *
@@ -42,7 +44,12 @@ trait MultisetLike[A, +This <: Multiset[A] with MultisetLike[A, This]] extends I
    *  @return  a new multiset consisting of all elements that are in this
    *  multisetset or in the given multiset `that`.
    */
-  def union(that: Multiset[A]): This = throw new Exception("Not Implemented")
+  def union(that: Multiset[A]): This = {
+    val b = self.newBuilder
+    b ++= this
+    b ++= that
+    b.result
+  }
 
   /**
    * Computes the difference of this multiset and another multiset.
@@ -51,6 +58,8 @@ trait MultisetLike[A, +This <: Multiset[A] with MultisetLike[A, This]] extends I
    *  @return     a multiset containing those elements of this
    *              multiset that are not also contained in the given multiset `that`.
    */
-  def diff(that: Multiset[A]): This = throw new Exception("Not Implemented")
+  def diff(that: Multiset[A]): This = {
+    this filter ( itm => that.multiplicity(itm) == 0)
+  }
 
 }

@@ -67,12 +67,28 @@ class MultisetSpec extends Specification {
     "contain the correct elements after intersection" in {
       val mset = Multiset(cprP1)
       val mset2 = Multiset(cprP2,cprP3,cprP4, cprP5,cprP6)
-      val intersection = mset intersect mset2 
+      val intersection = mset intersect mset2
       intersection.size must_== 2
       intersection.toList must_== List(cprP1, cprP2)
     }
 
+  }
 
+  "union" should {
+
+    "return the same multiset when invoked with an empty multiset" in {
+      val mset1 = Multiset(p1)
+      val mset2 = Multiset[Person]()
+      (mset1 union mset2).toList must_== Multiset(p1).toList // TODO: need to implement equals. 
+      (mset2 union mset1).toList must_== Multiset(p1).toList
+    }
+
+    "find the actual union" in {
+      val mset1 = Multiset(p1)
+      val mset2 = Multiset(p2)
+      (mset2 union mset1).toList must_== Multiset(p2,p1).toList
+      (mset1 union mset2).toList must_== Multiset(p1,p2).toList
+    }
   }
 
 }

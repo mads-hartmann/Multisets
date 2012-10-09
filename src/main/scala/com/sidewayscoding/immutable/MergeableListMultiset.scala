@@ -6,6 +6,7 @@ import com.sidewayscoding.MergeableMultiset
 import com.sidewayscoding.MergeableMultisetLike
 import scala.collection.generic.GenericCompanion
 import com.sidewayscoding.GenericMultisetTemplate
+import scala.collection.immutable.ListMap
 
 object MergeableListMultiset extends ImmutableMergeableMultisetFactory[MergeableListMultiset] {
 
@@ -13,7 +14,7 @@ object MergeableListMultiset extends ImmutableMergeableMultisetFactory[Mergeable
   implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, MergeableListMultiset[A]] = multisetCanBuildFrom[A]
 
   def apply[A](): MergeableListMultiset[A] =
-    new MergeableListMultiset[A](Map[A,Int]())
+    new MergeableListMultiset[A](ListMap[A,Int]())
 
 }
 
@@ -24,11 +25,11 @@ object MergeableListMultiset extends ImmutableMergeableMultisetFactory[Mergeable
  *  than one that has no obvious bugs) so it can be used to test more advanced
  *  implementations.
  */
-class MergeableListMultiset[A] private[immutable] (val delegate: Map[A, Int]) extends MergeableMultiset[A]
-                                                                                 with MergeableMultisetLike[A, MergeableListMultiset[A]]
-                                                                                 with GenericMultisetTemplate[A, MergeableListMultiset]{
+class MergeableListMultiset[A] private[immutable] (val delegate: ListMap[A, Int]) extends MergeableMultiset[A]
+                                                                                     with MergeableMultisetLike[A, MergeableListMultiset[A]]
+                                                                                     with GenericMultisetTemplate[A, MergeableListMultiset]{
 
-  def withMultiplicity = delegate.toIterable
+  def withMultiplicity = delegate.toIterable.map{ case (itm, count) => ((0 until count).map(_ =>itm), count)}
 
   override def companion: GenericCompanion[MergeableListMultiset] = MergeableListMultiset
 
@@ -61,7 +62,7 @@ class MergeableListMultiset[A] private[immutable] (val delegate: Map[A, Int]) ex
 
 }
 
-class MergeableListMultisetIterator[A](private val tm: Map[A, Int]) extends Iterator[A] {
+class MergeableListMultisetIterator[A](private val tm: ListMap[A, Int]) extends Iterator[A] {
 
   private[this] val mapIterator = tm.iterator
   private[this] var indexInElement = 1
