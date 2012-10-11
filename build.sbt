@@ -19,3 +19,5 @@ libraryDependencies ++= Seq(
 initialCommands := """
   import com.sidewayscoding._
   import com.sidewayscoding.immutable._"""
+
+seq(ScctPlugin.instrumentSettings : _*)

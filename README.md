@@ -17,3 +17,18 @@ the end of the project and as such comprehensive testing is required.
 ## Dependencies 
 
 - [ScalaCheck](https://github.com/rickynils/scalacheck)
+
+## Building
+
+The project is build using [SBT](http://www.scala-sbt.org/release/docs/home.html). 
+
+### Code Coverage
+
+In an SBT session, run:
+
+    > clean 
+    > scct:test 
+
+And then in your shell
+
+    > open target/scala-2.9.2/coverage-report/index.html
