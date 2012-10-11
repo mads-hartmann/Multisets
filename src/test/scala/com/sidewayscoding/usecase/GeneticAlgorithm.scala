@@ -201,7 +201,7 @@ object Data {
     Solution(rec(Nil, places), 0)
   }
 
-  // Generate «x« unique random numbers with the maximum value defiend by `roof`
+  // Generate `x` unique random numbers with the maximum value defiend by `roof`
   def uniqueRandom(x: Int, roof: Int): Seq[Int] = {
     assert(x < roof, "The number of unique numbers should be smaller than the max allowed value")
     @tailrec def rec(current: List[Int], remaining: Int): Seq[Int] = {
