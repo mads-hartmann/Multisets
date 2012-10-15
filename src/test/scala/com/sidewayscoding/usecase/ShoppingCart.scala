@@ -26,9 +26,8 @@ object ShoppingCart {
     )
 
     println("Shopping cart contents")
-    println(shoppingCart.withMultiplicity.map( (a: Tuple2[Seq[Book], Int]) => {
-      val (books, count) = a
-      "item: %s, count: %s".format(books.head.name, count)
+    println((shoppingCart.multiplicities.map { case (book, count) =>
+      "item %s, count: %s".format(book.name, count)
     }).mkString("\n"))
 
   }

@@ -1,7 +1,6 @@
 package com.sidewayscoding
 
 import scala.collection.mutable.Builder
-import com.sidewayscoding.immutable.Multiset
 
 /** TODO: This is an exact copy of SetBuilder. Maybe they can be united? */ 
 class MultisetBuilder[A, Coll <: Multiset[A] with MultisetLike[A, Coll]](empty: Coll) extends Builder[A, Coll] {

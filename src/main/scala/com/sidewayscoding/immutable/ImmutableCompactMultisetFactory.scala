@@ -1,13 +1,11 @@
 package com.sidewayscoding.immutable
 
-import com.sidewayscoding.CompactMultiset
-import com.sidewayscoding.CompactMultisetLike
 import scala.collection.mutable.Builder
-import scala.collection.generic.CanBuildFrom
-import com.sidewayscoding.MultisetBuilder
+import com.sidewayscoding.MultisetFactory
+import com.sidewayscoding.CompactMultisetLike
 
 abstract class ImmutableCompactMultisetFactory[CC[A] <: CompactMultiset[A] with CompactMultisetLike[A, CC[A]]]
-       extends ImmutableMultisetFactory[CC] {
+       extends MultisetFactory[CC] {
 
   def apply[X: ClassManifest, A](elems: (A, Int)*): CC[A] = (newTupleBuilder[A] ++= elems).result
 
@@ -29,6 +27,4 @@ abstract class ImmutableCompactMultisetFactory[CC[A] <: CompactMultiset[A] with 
     def clear() { elems = empty }
     def result: Coll = elems
   }
-
-
 }

@@ -4,6 +4,9 @@ import com.sidewayscoding.MultisetLike
 import scala.collection.mutable.Builder
 import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable.ListMap
+import com.sidewayscoding.FullMultisetLike
+import com.sidewayscoding.GenericMultisetTemplate
+import scala.collection.generic.GenericCompanion
 
 /**
  * @author mads379
@@ -16,10 +19,18 @@ object ListMultiset extends ImmutableMultisetFactory[ListMultiset] {
 }
 
 class ListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]]) extends Multiset[A]
-                                                                                with MultisetLike[A, ListMultiset[A]] {
+                                                                                with FullMultiset[A]
+                                                                                with GenericMultisetTemplate[A, ListMultiset]
+                                                                                with FullMultisetLike[A, ListMultiset[A]] {
+  override def companion: GenericCompanion[ListMultiset] = ListMultiset
+  override def seq = this
 
-  def withMultiplicity = delegate.toIterable.map{ case (_,itms) => (itms, itms.size) }
-  
+  def multiplicities = delegate.mapValues(_.size)
+
+  def copies: Map[A, Seq[A]] = delegate
+
+  def get(a: A): Seq[A] = delegate.getOrElse(a, Nil)
+
   def iterator: Iterator[A] = new ListMultisetIterator(delegate)
 
   override def newBuilder: Builder[A, ListMultiset[A]] = ListMultiset.newBuilder

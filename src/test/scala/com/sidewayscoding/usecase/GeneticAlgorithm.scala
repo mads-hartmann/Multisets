@@ -3,6 +3,7 @@ package com.sidewayscoding.usecase
 import scala.util.Random
 import scala.annotation.tailrec
 import com.sidewayscoding.immutable.Multiset
+import com.sidewayscoding.FullMultiset
 
 /**
  * Finding a solution to TPS using a Genetic Algorithm.
@@ -30,8 +31,8 @@ object GeneticAlgorithm extends App {
     Point(2,0),
     Point(1,0))
 
-  var population: Multiset[Solution] =
-    Multiset((1 to initialPopulation).map(_ => randomSolution(citites)): _*)
+  var population: FullMultiset[Solution] =
+    FullMultiset((1 to initialPopulation).map(_ => randomSolution(citites)): _*)
 
   for (gen <- 1 until N) {
     val picks = pickThreeRandom(population)
@@ -70,11 +71,10 @@ object GeneticAlgorithm extends App {
 
   println("")
 
-  // The `toList` here is a bit annoying but you can't sort an `Iterable`.
-  population.withMultiplicity.toList.sortBy( tup => tup._1.head.fitness).foreach {
-    case (elems, mult) => println("Fitness: %f\tcount: %s\tsolution:%s\tgenerations: %s".format(
+  population.copies.toList.sortBy( tup => tup._1.fitness).foreach {
+    case (elem, elems) => println("Fitness: %f\tcount: %s\tsolution:%s\tgenerations: %s".format(
         elems.head.fitness,
-        mult,
+        elems.size,
         elems.head.seq.map( p => "(%s,%s)".format(p.x,p.y)).mkString(";"),
         elems.map(_.generation).mkString(",")
        ))
@@ -221,7 +221,7 @@ object Data {
 
   // Because Multisets aren't indexed there isn't a nice way to pick three random
   // elements.
-  def pickThreeRandom(options: Multiset[Solution]): Seq[Solution] = {
+  def pickThreeRandom(options: FullMultiset[Solution]): Seq[Solution] = {
     val randoms = uniqueRandom(2, options.size-2)
     val (as, bs) = options.splitAt(randoms.head)
     val (xs, ys) = options.splitAt(randoms.last)
@@ -232,7 +232,7 @@ object Data {
   }
 
   // Remove one of many possible duplicates.
-  def removeFromSolutions(solutions: Multiset[Solution], x: Solution): Multiset[Solution] = {
+  def removeFromSolutions(solutions: FullMultiset[Solution], x: Solution): FullMultiset[Solution] = {
     val many = solutions.filter(_.hashCode == x.hashCode)
     solutions.filterNot(_.hashCode == x.hashCode) ++ many.tail
   }

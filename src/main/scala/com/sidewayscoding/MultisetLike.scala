@@ -2,7 +2,6 @@ package com.sidewayscoding
 
 import scala.collection.{ IterableLike }
 import scala.collection.GenIterableLike
-import com.sidewayscoding.immutable.Multiset
 import scala.collection.generic.CanBuildFrom
 
 /**
@@ -13,13 +12,27 @@ trait MultisetLike[A, +This <: Multiset[A] with MultisetLike[A, This]] extends I
 
   self =>
 
+  /**
+   * The number of occurrences of `a` in this Multiset.
+   */
   def multiplicity(a: A): Int
 
+  /**
+   * A copy of this Multiset with one more occurrence of `a`.
+   */
   def +(a: A): This
 
+  /**
+   * A copy of this Multiset with one less occurrence of `a`.
+   */
   def -(a: A): This
 
-  def withMultiplicity: Iterable[(Seq[A], Int)]
+  /**
+   * All the items in the Multiset with their associated multiplicity.
+   *
+   * @return A Map associating each unique item with its multiplicity.
+   */
+  def multiplicities: Map[A, Int]
 
   /**
    * Computes the intersection between this multiset and another multiset.

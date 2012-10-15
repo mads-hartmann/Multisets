@@ -1,17 +1,19 @@
 package com.sidewayscoding.immutable
 
 import scala.collection.generic.CanBuildFrom
-import scala.collection.mutable.Builder
-import com.sidewayscoding.CompactMultiset
-import com.sidewayscoding.CompactMultisetLike
 import scala.collection.generic.GenericCompanion
-import com.sidewayscoding.GenericMultisetTemplate
 import scala.collection.immutable.ListMap
+import scala.collection.mutable.Builder
+
+import com.sidewayscoding.CompactMultisetLike
+import com.sidewayscoding.GenericMultisetTemplate
 
 object CompactListMultiset extends ImmutableCompactMultisetFactory[CompactListMultiset] {
 
   override def empty[A] = apply()
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, CompactListMultiset[A]] = multisetCanBuildFrom[A]
+
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, CompactListMultiset[A]] =
+    multisetCanBuildFrom[A]
 
   def apply[A](): CompactListMultiset[A] =
     new CompactListMultiset[A](ListMap[A,Int]())
@@ -26,12 +28,12 @@ object CompactListMultiset extends ImmutableCompactMultisetFactory[CompactListMu
  *  implementations.
  */
 class CompactListMultiset[A] private[immutable] (val delegate: ListMap[A, Int]) extends CompactMultiset[A]
-                                                                                     with CompactMultisetLike[A, CompactListMultiset[A]]
-                                                                                     with GenericMultisetTemplate[A, CompactListMultiset] {
-
-  def withMultiplicity = delegate.toIterable.map{ case (itm, count) => ((0 until count).map(_ =>itm), count)}
+                                                                                   with CompactMultisetLike[A, CompactListMultiset[A]]
+                                                                                   with GenericMultisetTemplate[A, CompactListMultiset] {
 
   override def companion: GenericCompanion[CompactListMultiset] = CompactListMultiset
+
+  def multiplicities = delegate
 
   def iterator: Iterator[A] = new MergeableListMultisetIterator(delegate)
 
