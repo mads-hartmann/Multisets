@@ -1,6 +1,6 @@
 package com.sidewayscoding.immutable
 
-import org.specs2.mutable._
+import org.specs2.mutable.Specification
 
 class MultisetSpec extends Specification {
 
@@ -9,7 +9,7 @@ class MultisetSpec extends Specification {
   val p1 = Person("Mads", 23)
   val p2 = Person("Mikkel", 23)
   val p3 = Person("Mads", 25)
-
+  
   // case class where equals is only defined over a subset of the properties
   case class CPRPerson(cpr: String, name: String) {
     override def equals(o: Any) = o match {

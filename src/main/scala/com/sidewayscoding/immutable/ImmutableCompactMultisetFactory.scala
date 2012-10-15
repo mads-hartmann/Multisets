@@ -1,19 +1,19 @@
 package com.sidewayscoding.immutable
 
-import com.sidewayscoding.MergeableMultiset
-import com.sidewayscoding.MergeableMultisetLike
+import com.sidewayscoding.CompactMultiset
+import com.sidewayscoding.CompactMultisetLike
 import scala.collection.mutable.Builder
 import scala.collection.generic.CanBuildFrom
 import com.sidewayscoding.MultisetBuilder
 
-abstract class ImmutableMergeableMultisetFactory[CC[A] <: MergeableMultiset[A] with MergeableMultisetLike[A, CC[A]]]
+abstract class ImmutableCompactMultisetFactory[CC[A] <: CompactMultiset[A] with CompactMultisetLike[A, CC[A]]]
        extends ImmutableMultisetFactory[CC] {
 
   def apply[X: ClassManifest, A](elems: (A, Int)*): CC[A] = (newTupleBuilder[A] ++= elems).result
 
-  private def newTupleBuilder[A]: Builder[(A, Int), CC[A]] = new MergeabeMultisetBuilder[A, CC[A]](empty)
+  private def newTupleBuilder[A]: Builder[(A, Int), CC[A]] = new CompactMultisetBuilder[A, CC[A]](empty)
 
-  private class MergeabeMultisetBuilder[A, Coll <: MergeableMultiset[A] with MergeableMultisetLike[A, Coll]](empty: Coll)
+  private class CompactMultisetBuilder[A, Coll <: CompactMultiset[A] with CompactMultisetLike[A, Coll]](empty: Coll)
         extends Builder[(A, Int), Coll] {
 
     protected var elems: Coll = empty

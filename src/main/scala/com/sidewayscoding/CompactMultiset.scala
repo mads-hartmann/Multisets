@@ -2,6 +2,6 @@ package com.sidewayscoding
 
 import com.sidewayscoding.immutable.Multiset
 
-trait MergeableMultiset[A] extends Multiset[A] {
+trait CompactMultiset[A] extends Multiset[A] {
 
 }

@@ -2,19 +2,19 @@ package com.sidewayscoding.immutable
 
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable.Builder
-import com.sidewayscoding.MergeableMultiset
-import com.sidewayscoding.MergeableMultisetLike
+import com.sidewayscoding.CompactMultiset
+import com.sidewayscoding.CompactMultisetLike
 import scala.collection.generic.GenericCompanion
 import com.sidewayscoding.GenericMultisetTemplate
 import scala.collection.immutable.ListMap
 
-object MergeableListMultiset extends ImmutableMergeableMultisetFactory[MergeableListMultiset] {
+object CompactListMultiset extends ImmutableCompactMultisetFactory[CompactListMultiset] {
 
   override def empty[A] = apply()
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, MergeableListMultiset[A]] = multisetCanBuildFrom[A]
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, CompactListMultiset[A]] = multisetCanBuildFrom[A]
 
-  def apply[A](): MergeableListMultiset[A] =
-    new MergeableListMultiset[A](ListMap[A,Int]())
+  def apply[A](): CompactListMultiset[A] =
+    new CompactListMultiset[A](ListMap[A,Int]())
 
 }
 
@@ -25,17 +25,17 @@ object MergeableListMultiset extends ImmutableMergeableMultisetFactory[Mergeable
  *  than one that has no obvious bugs) so it can be used to test more advanced
  *  implementations.
  */
-class MergeableListMultiset[A] private[immutable] (val delegate: ListMap[A, Int]) extends MergeableMultiset[A]
-                                                                                     with MergeableMultisetLike[A, MergeableListMultiset[A]]
-                                                                                     with GenericMultisetTemplate[A, MergeableListMultiset]{
+class CompactListMultiset[A] private[immutable] (val delegate: ListMap[A, Int]) extends CompactMultiset[A]
+                                                                                     with CompactMultisetLike[A, CompactListMultiset[A]]
+                                                                                     with GenericMultisetTemplate[A, CompactListMultiset] {
 
   def withMultiplicity = delegate.toIterable.map{ case (itm, count) => ((0 until count).map(_ =>itm), count)}
 
-  override def companion: GenericCompanion[MergeableListMultiset] = MergeableListMultiset
+  override def companion: GenericCompanion[CompactListMultiset] = CompactListMultiset
 
   def iterator: Iterator[A] = new MergeableListMultisetIterator(delegate)
 
-  override def newBuilder: Builder[A, MergeableListMultiset[A]] = MergeableListMultiset.newBuilder
+  override def newBuilder: Builder[A, CompactListMultiset[A]] = CompactListMultiset.newBuilder
 
   override def size: Int = delegate.values.sum
 
@@ -44,19 +44,19 @@ class MergeableListMultiset[A] private[immutable] (val delegate: ListMap[A, Int]
   def +(a: A) = {
     val newCount    = delegate.get(a).map(_ + 1).getOrElse(1)
     val newDelegate = delegate.updated(a, newCount)
-    new MergeableListMultiset(newDelegate)
+    new CompactListMultiset(newDelegate)
   }
 
   def -(a: A) = {
     if (delegate.contains(a)) {
-      val count = delegate.get(a).get
-      if (count <= 1) {
-        new MergeableListMultiset(delegate - a)
+        val count = delegate.get(a).get
+        if (count <= 1) {
+          new CompactListMultiset(delegate - a)
+        } else {
+          new CompactListMultiset(delegate.updated(a, count - 1))
+        }
       } else {
-        new MergeableListMultiset(delegate.updated(a, count - 1))
-      }
-    } else {
-      this
+      CompactListMultiset.this
     }
   }
 
