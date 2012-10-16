@@ -48,7 +48,11 @@ class ListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]]) ext
     new ListMultiset(delegate.updated(a, newList))
   }
 
-  def removed(a: A)(implicit eq: Equiv[A]) = {
+  def removed(a: A) = removed[ListMultiset[A]](a: A)(implicitly[Equiv[A]], implicitly[ClassManifest[ListMultiset[A]]])
+
+  def removedAll(a: A) = removedAll[ListMultiset[A]](a)(implicitly[Equiv[A]], implicitly[ClassManifest[ListMultiset[A]]])
+
+  def removed[X](a: A)(implicit eq: Equiv[A], manifest: ClassManifest[X]) = {
     if (delegate.contains(a)) {
       val list = delegate.get(a).get
       if (list.size == 1) {
@@ -63,7 +67,7 @@ class ListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]]) ext
     }
   }
 
-  def removedAll(a: A)(implicit eq: Equiv[A]) = {
+  def removedAll[X](a: A)(implicit eq: Equiv[A], manifest: ClassManifest[X]) = {
     if (delegate.contains(a)) {
       val list = delegate.get(a).get
       if (list.size == 1) {
