@@ -51,11 +51,10 @@ class ListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]]) ext
   def -(a: A) = {
     if (delegate.contains(a)) {
       val list = delegate.get(a).get
-      val newList = list - a
-      if (newList.isEmpty) {
+      if (list.size == 1) {
         new ListMultiset(delegate - a)
       } else {
-        new ListMultiset(delegate.updated(a, newList))
+        new ListMultiset(delegate.updated(a, list.tail))
       }
     } else {
       this

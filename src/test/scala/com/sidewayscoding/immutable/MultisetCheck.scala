@@ -1,27 +1,49 @@
 package com.sidewayscoding.immutable
 
 import org.scalacheck.Properties
-import org.scalacheck.Prop.forAll
+import org.scalacheck.Prop._
 import org.scalacheck._
 import org.scalacheck.Gen._
 import Arbitrary.arbitrary
 import org.scalacheck.util.Buildable
 import com.sidewayscoding.MultisetBuilder
 
-object MultisetCheck extends Properties("Multiset"){
+object MultisetCheck extends Properties("Multiset") {
 
-  implicit def buildableMultiset[A] = new Buildable[A, Multiset] {
-    def builder = new MultisetBuilder(Multiset.empty[A])
+  import com.sidewayscoding._
+
+  property("size") = forAll { (elems: List[String]) =>
+    Multiset(elems:_*).size == elems.size
   }
 
-  val multisetGen = Gen.containerOf[Multiset, String](Gen.alphaStr)
+  property("adding an item should increase the size of the multiset") = forAll { 
+    (ms: Multiset[String], s: String) =>
+      (ms + s).size == ms.size + 1
+  }
 
-  property("size") = forAll((elems: List[String]) => Multiset(elems:_*).size == elems.size)
+  property("adding an item should increase it's multiplicity") = forAll { 
+    (ms: Multiset[String], s: String) =>
+      (ms + s).multiplicity(s) == ms.multiplicity(s) + 1
+  }
 
-  property("add") = forAll((ms: Multiset[String], s: String) => (ms + s).size == ms.size + 1)
+  property("removing existing item should decrease size") = forAll(genMultisetWithString) {
+    ((ms: Multiset[String], s: String) =>
+      ((ms - s).size) == (ms.size - 1) ).tupled
+  }
 
-  property("intersection") = forAll((ms: Multiset[String]) => ms.intersect(Multiset[String]()).size == 0)
+  property("removing existing item should decrease multiplicity") = forAll(genMultisetWithString) {
+    ((ms: Multiset[String], s: String) =>
+      (ms - s).multiplicity(s) == ms.multiplicity(s) - 1 ).tupled
+  }
 
-  property("union") = forAll((ms: Multiset[String]) => ms.union(Multiset[String]()).size == ms.size)
+  property("intersection with empty multiset") = forAll {
+    (ms: Multiset[String]) =>
+      ms.intersect(Multiset[String]()).size == 0
+  }
+
+  property("union with empty multiset") = forAll {
+    (ms: Multiset[String]) =>
+      ms.union(Multiset[String]()).size == ms.size
+  }
 
 }
