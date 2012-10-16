@@ -28,12 +28,12 @@ object MultisetCheck extends Properties("Multiset") {
 
   property("removing existing item should decrease size") = forAll(genMultisetWithString) {
     ((ms: Multiset[String], s: String) =>
-      ((ms - s).size) == (ms.size - 1) ).tupled
+      ((ms.removed(s)).size) == (ms.size - 1) ).tupled
   }
 
   property("removing existing item should decrease multiplicity") = forAll(genMultisetWithString) {
     ((ms: Multiset[String], s: String) =>
-      (ms - s).multiplicity(s) == ms.multiplicity(s) - 1 ).tupled
+      (ms.removed(s)).multiplicity(s) == ms.multiplicity(s) - 1 ).tupled
   }
 
   property("intersection with empty multiset") = forAll {
@@ -46,4 +46,11 @@ object MultisetCheck extends Properties("Multiset") {
       ms.union(Multiset[String]()).size == ms.size
   }
 
+  // TODO: find a nice way to test the following: 
+  // def multiplicities = delegate.mapValues(_.size)
+  // def copies: Map[A, Seq[A]] = delegate
+  // def get(a: A): Seq[A] = delegate.getOrElse(a, Nil)
+
+  // TODO: De Morgan's Law
+  
 }

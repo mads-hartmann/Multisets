@@ -14,7 +14,7 @@ package object sidewayscoding {
 
   val genMultisetWithString = for {
     mset <- genStringMultiset
-    s <- Arbitrary.arbitrary[String]
+       s <- Arbitrary.arbitrary[String]
   } yield (mset + s, s)
 
 }

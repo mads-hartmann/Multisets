@@ -49,17 +49,21 @@ class CompactListMultiset[A] private[immutable] (val delegate: ListMap[A, Int]) 
     new CompactListMultiset(newDelegate)
   }
 
-  def -(a: A) = {
+  def removed(a: A)(implicit eq: Equiv[A]) = {
     if (delegate.contains(a)) {
-        val count = delegate.get(a).get
-        if (count <= 1) {
-          new CompactListMultiset(delegate - a)
-        } else {
-          new CompactListMultiset(delegate.updated(a, count - 1))
-        }
+      val count = delegate.get(a).get
+      if (count <= 1) {
+        new CompactListMultiset(delegate - a)
       } else {
+        new CompactListMultiset(delegate.updated(a, count - 1))
+      }
+    } else {
       CompactListMultiset.this
     }
+  }
+
+  def removedAll(a: A)(implicit eq: Equiv[A]) = {
+    new CompactListMultiset(delegate - a)
   }
 
 }

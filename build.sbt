@@ -11,6 +11,10 @@ resolvers ++= Seq(
   "Sonatype Releases" at "http://oss.sonatype.org/content/repositories/releases"
 )
 
+scalacOptions ++= Seq(
+  "-deprecation"
+)
+
 libraryDependencies ++= Seq( 
   "org.scalacheck" %% "scalacheck" % "1.10.0" % "test",
   "org.specs2" %% "specs2" % "1.12.1" % "test"

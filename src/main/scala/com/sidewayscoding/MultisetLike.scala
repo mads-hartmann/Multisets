@@ -25,7 +25,12 @@ trait MultisetLike[A, +This <: Multiset[A] with MultisetLike[A, This]] extends I
   /**
    * A copy of this Multiset with one less occurrence of `a`.
    */
-  def -(a: A): This
+  def removed(a: A)(implicit eq: Equiv[A]): This
+
+  /**
+   * A copy of this Multiset with all occurrences of `a` removed.
+   */
+  def removedAll(a: A)(implicit eq: Equiv[A]): This
 
   /**
    * All the items in the Multiset with their associated multiplicity.
