@@ -18,7 +18,7 @@ trait Multiset[A] extends Iterable[A]
 object Multiset extends ImmutableMultisetFactory[Multiset] {
 
   override def empty[A]: Multiset[A] =
-    com.sidewayscoding.immutable.ListMultiset.empty[A]
+    com.sidewayscoding.immutable.FullListMultiset.empty[A]
 
   implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Multiset[A]] =
     multisetCanBuildFrom[A]

@@ -19,7 +19,7 @@ trait FullMultiset[A] extends Iterable[A]
 object FullMultiset extends MultisetFactory[FullMultiset] {
 
   override def empty[A]: FullMultiset[A] =
-    ListMultiset.empty[A]
+    FullListMultiset.empty[A]
 
   implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, FullMultiset[A]] =
     multisetCanBuildFrom[A]

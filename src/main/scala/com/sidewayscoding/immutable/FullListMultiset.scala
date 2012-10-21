@@ -11,19 +11,19 @@ import scala.collection.generic.GenericCompanion
 /**
  * @author mads379
  */
-object ListMultiset extends ImmutableMultisetFactory[ListMultiset] {
+object FullListMultiset extends ImmutableMultisetFactory[FullListMultiset] {
 
-  override def empty[A] = new ListMultiset[A](ListMap[A, List[A]]())
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, ListMultiset[A]] = multisetCanBuildFrom[A]
+  override def empty[A] = new FullListMultiset[A](ListMap[A, List[A]]())
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, FullListMultiset[A]] = multisetCanBuildFrom[A]
 
 }
 
-class ListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]]) extends Multiset[A]
+class FullListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]]) extends Multiset[A]
                                                                                 with FullMultiset[A]
-                                                                                with GenericMultisetTemplate[A, ListMultiset]
-                                                                                with FullMultisetLike[A, ListMultiset[A]] {
-  override def companion: GenericCompanion[ListMultiset] = ListMultiset
-  override def seq = this
+                                                                                with GenericMultisetTemplate[A, FullListMultiset]
+                                                                                with FullMultisetLike[A, FullListMultiset[A]] {
+  override def companion: GenericCompanion[FullListMultiset] = FullListMultiset
+  override def seq = FullListMultiset.this
 
   def multiplicities = delegate.mapValues(_.size)
 
@@ -33,7 +33,7 @@ class ListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]]) ext
 
   def iterator: Iterator[A] = new ListMultisetIterator(delegate)
 
-  override def newBuilder: Builder[A, ListMultiset[A]] = ListMultiset.newBuilder
+  override def newBuilder: Builder[A, FullListMultiset[A]] = FullListMultiset.newBuilder
 
   override def size: Int = {
     delegate.map( _._2.size ).sum
@@ -45,7 +45,7 @@ class ListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]]) ext
 
   def +(a: A) = {
     val newList = a :: delegate.getOrElse(a, Nil)
-    new ListMultiset(delegate.updated(a, newList))
+    new FullListMultiset(delegate.updated(a, newList))
   }
 
   def removed(a: A) = removed(a: A, implicitly[Equiv[A]])
@@ -54,30 +54,30 @@ class ListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]]) ext
 
   def removed(a: A, eq: Equiv[A]) = {
     if (delegate.contains(a)) {
-      val list = delegate.get(a).get
-      if (list.size == 1) {
-        new ListMultiset(delegate - a)
+        val list = delegate.get(a).get
+        if (list.size == 1) {
+          new FullListMultiset(delegate - a)
+        } else {
+          val toBeRemoved = list.filter( eq.equiv(_, a))
+          val newList = list.filterNot(_ == a) ++ toBeRemoved.tail
+          new FullListMultiset(delegate.updated(a, newList))
+        }
       } else {
-        val toBeRemoved = list.filter( eq.equiv(_, a))
-        val newList = list.filterNot(_ == a) ++ toBeRemoved.tail
-        new ListMultiset(delegate.updated(a, newList))
-      }
-    } else {
-      this
+      FullListMultiset.this
     }
   }
 
   def removedAll(a: A, eq: Equiv[A]) = {
     if (delegate.contains(a)) {
-      val list = delegate.get(a).get
-      if (list.size == 1) {
-        new ListMultiset(delegate - a)
+        val list = delegate.get(a).get
+        if (list.size == 1) {
+          new FullListMultiset(delegate - a)
+        } else {
+          val newList = list.filterNot( eq.equiv(_, a))
+          new FullListMultiset(delegate.updated(a, newList))
+        }
       } else {
-        val newList = list.filterNot( eq.equiv(_, a))
-        new ListMultiset(delegate.updated(a, newList))
-      }
-    } else {
-      this
+      FullListMultiset.this
     }
   }
 
