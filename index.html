@@ -11,6 +11,17 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+  	<script type="text/javascript" src="scripts/shCore.js"></script>
+  	<script type="text/javascript" src="scripts/shBrushScala.js"></script>
+  	<link type="text/css" rel="stylesheet" href="styles/shCoreDefault.css"/>
+  	<script type="text/javascript">SyntaxHighlighter.all();</script>
+    <style type="text/css" media="screen">
+      .syntaxhighlighter {
+        font-size: 12px !important;
+        margin-left: -40px !important;
+        width: 540px !important;
+      }
+    </style>
   </head>
   <body>
     <div class="wrapper">
@@ -35,17 +46,17 @@
         <p>The project is still in the early stages of development so please don't use it for anything serious but please feel encouraged to try it out and suggest improvements.</p>
         <h3>Getting Started</h3>
         <p>Currently the artifacts aren't published anywhere so if you want to try it out you have to depend on the source directly from this git repository. You can do so by putting the following in your <code>project/Build.scala</code> file.</p>
-        <pre><code>import sbt._
+        <pre class="brush: scala;">import sbt._
 
 object MyProject extends Build {
   lazy val root = Project("project", file(".")) dependsOn(multi)
   lazy val multi = uri("git://github.com/mads379/Multisets")
-}</code></pre>
+}</pre>
         <p>You can find the scala-docs <a href="http://mads379.github.com/Multisets/docs/index.html">here</a></p>
         <h3>Examples</h3>
         <p>Multisets are sets that allow multiple occurrences of the same element. A distinction is made between Multisets that keep all elements in memory (<code>FullMultiset</code>) and those that store only the first of equal elements and use a counter (<code>CompactMultiset</code>) to keep track of the multiplicity of each element. This distinction is important if you have defined an equals method that does not consider all properties of the elements as you would then loose imformation if you only stored the first of equal elements.</p>
         <p>The following example shows a use-case where it makes sense to use a CompactMultiset as the equals method on <code>book</code> takes all properties into consideration, i.e. no information is lost if we just keep one object in the data structure. The program simply prints a histogram of a series of books.</p>
-        <pre><code>import com.sidewayscoding.immutable.CompactListMultiset
+        <pre class="brush: scala;">import com.sidewayscoding.immutable.CompactListMultiset
 
 object ShoppingCart {
 
@@ -73,9 +84,9 @@ object ShoppingCart {
 
   }
 
-}</code></pre>
+}</pre>
 <p>Another example is finding files with the same name in different directories in your hard-disk. We choose to model a file as a <code>case class</code> with the <code>filename</code> and the <code>path</code> but we define <code>equals</code> such that it only relies on the filename. In this case we don't want to use a CompactMultiset as we would loose important information (the path).</p>
-<pre><code>import com.sidewayscoding.immutable.Multiset
+<pre class="brush: scala;">import com.sidewayscoding.immutable.Multiset
 
 object DuplicateFileNames {
   def main(args: Array[String]) {
@@ -110,7 +121,7 @@ object DuplicateFileNames {
     println(duplicates.size)
     println(duplicates)
   }
-}</code></pre>
+}</pre>
         <h3>Feedback</h3>
         <p>If you have any suggestions then please open an issue on the <a href="https://github.com/mads379/Multisets">github project</a> so it can be discussed publicly.</p>
       </section>
