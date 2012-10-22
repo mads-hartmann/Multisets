@@ -2,7 +2,7 @@ package com.sidewayscoding.immutable
 
 import scala.collection.generic.CanBuildFrom
 import scala.collection.generic.GenericCompanion
-import scala.collection.immutable.ListMap
+import scala.collection.immutable.HashMap
 import scala.collection.mutable.Builder
 
 import com.sidewayscoding.CompactMultisetLike
@@ -16,7 +16,7 @@ object CompactListMultiset extends ImmutableCompactMultisetFactory[CompactListMu
     multisetCanBuildFrom[A]
 
   def apply[A](): CompactListMultiset[A] =
-    new CompactListMultiset[A](ListMap[A,Int]())
+    new CompactListMultiset[A](HashMap[A,Int]())
 
 }
 
@@ -27,7 +27,7 @@ object CompactListMultiset extends ImmutableCompactMultisetFactory[CompactListMu
  *  than one that has no obvious bugs) so it can be used to test more advanced
  *  implementations.
  */
-class CompactListMultiset[A] private[immutable] (val delegate: ListMap[A, Int]) extends CompactMultiset[A]
+class CompactListMultiset[A] private[immutable] (val delegate: HashMap[A, Int]) extends CompactMultiset[A]
                                                                                    with CompactMultisetLike[A, CompactListMultiset[A]]
                                                                                    with GenericMultisetTemplate[A, CompactListMultiset] {
 
@@ -68,7 +68,7 @@ class CompactListMultiset[A] private[immutable] (val delegate: ListMap[A, Int]) 
 
 }
 
-class MergeableListMultisetIterator[A](private val tm: ListMap[A, Int]) extends Iterator[A] {
+private class MergeableListMultisetIterator[A](private val tm: HashMap[A, Int]) extends Iterator[A] {
 
   private[this] val mapIterator = tm.iterator
   private[this] var indexInElement = 1

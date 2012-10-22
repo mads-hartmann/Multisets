@@ -1,15 +1,15 @@
 package com.sidewayscoding.usecase
 
-import com.sidewayscoding.immutable.FullListMultiset
+import com.sidewayscoding.immutable.FullHashMultiset
 import com.sidewayscoding.immutable.CompactListMultiset
 
 object Examples {
 
   def main(args: Array[String]) {
 
-    val ms: FullListMultiset[Int] = FullListMultiset(1,2,3,4,5,4,3,2)
+    val ms: FullHashMultiset[Int] = FullHashMultiset(1,2,3,4,5,4,3,2)
 
-    val ms2: FullListMultiset[String] = ms.map(_.toString)
+    val ms2: FullHashMultiset[String] = ms.map(_.toString)
 
     val l = CompactListMultiset(1,2,3,4,5,6)
 

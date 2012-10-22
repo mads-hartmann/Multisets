@@ -1,6 +1,6 @@
 package com.sidewayscoding.usecase
 
-import com.sidewayscoding.immutable.FullListMultiset
+import com.sidewayscoding.immutable.FullHashMultiset
 import com.sidewayscoding.immutable.Multiset
 /**
  * TODO: Currently I don't see any advantage of Multiset here. You might as well use any other 

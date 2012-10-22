@@ -4,7 +4,7 @@ import scala.util.Random
 import scala.annotation.tailrec
 import com.sidewayscoding.immutable.Multiset
 import com.sidewayscoding.FullMultiset
-import com.sidewayscoding.immutable.FullListMultiset
+import com.sidewayscoding.immutable.FullHashMultiset
 
 /**
  * Finding a solution to TPS using a Genetic Algorithm.
@@ -194,6 +194,8 @@ object Data {
       case x: Solution => x.seq == this.seq
       case _ => false
     }
+
+    override def hashCode = this.seq.hashCode
 
     // Calculates the fitness of the solution. I.e. the total distance for the round-trip.
     def fitness: Double = {

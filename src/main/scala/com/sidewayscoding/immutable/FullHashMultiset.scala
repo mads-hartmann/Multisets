@@ -3,27 +3,30 @@ package com.sidewayscoding.immutable
 import com.sidewayscoding.MultisetLike
 import scala.collection.mutable.Builder
 import scala.collection.generic.CanBuildFrom
-import scala.collection.immutable.ListMap
+import scala.collection.immutable.HashMap
 import com.sidewayscoding.FullMultisetLike
 import com.sidewayscoding.GenericMultisetTemplate
 import scala.collection.generic.GenericCompanion
 
-/**
- * @author mads379
- */
-object FullListMultiset extends ImmutableMultisetFactory[FullListMultiset] {
 
-  override def empty[A] = new FullListMultiset[A](ListMap[A, List[A]]())
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, FullListMultiset[A]] = multisetCanBuildFrom[A]
+object FullHashMultiset extends ImmutableMultisetFactory[FullHashMultiset] {
+
+  override def empty[A] = new FullHashMultiset[A](HashMap[A, List[A]]())
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, FullHashMultiset[A]] = multisetCanBuildFrom[A]
 
 }
 
-class FullListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]]) extends Multiset[A]
+/**
+ * A FullMultiset implementation based on a HashMap. It is very important that
+ * the equals method of the elements you add obey the hashCode specification 
+ * defined here http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.html#hashCode()
+ */
+class FullHashMultiset[A] private[immutable] (val delegate: HashMap[A, List[A]]) extends Multiset[A]
                                                                                 with FullMultiset[A]
-                                                                                with GenericMultisetTemplate[A, FullListMultiset]
-                                                                                with FullMultisetLike[A, FullListMultiset[A]] {
-  override def companion: GenericCompanion[FullListMultiset] = FullListMultiset
-  override def seq = FullListMultiset.this
+                                                                                with GenericMultisetTemplate[A, FullHashMultiset]
+                                                                                with FullMultisetLike[A, FullHashMultiset[A]] {
+  override def companion: GenericCompanion[FullHashMultiset] = FullHashMultiset
+  override def seq = FullHashMultiset.this
 
   def multiplicities = delegate.mapValues(_.size)
 
@@ -33,7 +36,7 @@ class FullListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]])
 
   def iterator: Iterator[A] = new ListMultisetIterator(delegate)
 
-  override def newBuilder: Builder[A, FullListMultiset[A]] = FullListMultiset.newBuilder
+  override def newBuilder: Builder[A, FullHashMultiset[A]] = FullHashMultiset.newBuilder
 
   override def size: Int = {
     delegate.map( _._2.size ).sum
@@ -45,7 +48,7 @@ class FullListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]])
 
   def +(a: A) = {
     val newList = a :: delegate.getOrElse(a, Nil)
-    new FullListMultiset(delegate.updated(a, newList))
+    new FullHashMultiset(delegate.updated(a, newList))
   }
 
   def removed(a: A) = removed(a: A, implicitly[Equiv[A]])
@@ -56,14 +59,14 @@ class FullListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]])
     if (delegate.contains(a)) {
         val list = delegate.get(a).get
         if (list.size <= 1) {
-          new FullListMultiset(delegate - a)
+          new FullHashMultiset(delegate - a)
         } else {
           val toBeRemoved = list.filter( eq.equiv(_, a))
           val newList = list.filterNot(eq.equiv(_, a)) ++ toBeRemoved.tail
-          new FullListMultiset(delegate.updated(a, newList))
+          new FullHashMultiset(delegate.updated(a, newList))
         }
       } else {
-      FullListMultiset.this
+      FullHashMultiset.this
     }
   }
 
@@ -71,19 +74,19 @@ class FullListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]])
     if (delegate.contains(a)) {
         val list = delegate.get(a).get
         if (list.size <= 1) {
-          new FullListMultiset(delegate - a)
+          new FullHashMultiset(delegate - a)
         } else {
           val newList = list.filterNot( eq.equiv(_, a))
-          new FullListMultiset(delegate.updated(a, newList))
+          new FullHashMultiset(delegate.updated(a, newList))
         }
       } else {
-      FullListMultiset.this
+      FullHashMultiset.this
     }
   }
 
 }
 
-private class ListMultisetIterator[A](private val tm: ListMap[A, List[A]]) extends Iterator[A] {
+private class ListMultisetIterator[A](private val tm: HashMap[A, List[A]]) extends Iterator[A] {
 
   private val mapIterator = tm.iterator
   private var listIterator: Option[Iterator[A]] = None
