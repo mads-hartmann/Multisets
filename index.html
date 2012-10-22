@@ -41,21 +41,23 @@ object MyProject extends Build {
   lazy val root = Project("project", file(".")) dependsOn(multi)
   lazy val multi = uri("git://github.com/mads379/Multisets")
 }</code></pre>
+        <p>You can find the scala-docs <a href="http://mads379.github.com/Multisets/docs/index.html">here</a></p>
         <h3>Examples</h3>
-        <p>There are currently two different kinds of Multisets as we make a distinction between Multisets that contain elements that can be merged and those that don't. The two multisets are called <code>Multiset</code> and <code>MergeableMultiset</code> where, as the name suggests, MergeableMultiset will keep <em>one</em> element in the data structures together with a counter and Multiset will keep all elements.</p>
-        <p>The following example shows a use-case where it makes sense to use a MergeableMultiset as the equals method on <code>book</code> takes all properties into consideration, i.e. no information is lost if we just keep one object in the data structure. The program simply prints a histogram of a series of books.</p>
-        <pre><code>import com.sidewayscoding.immutable.MergeableListMultiset
+        <p>Multisets are sets that allow multiple occurrences of the same element. A distinction is made between Multisets that keep all elements in memory (<code>FullMultiset</code>) and those that store only the first of equal elements and use a counter (<code>CompactMultiset</code>) to keep track of the multiplicity of each element. This distinction is important if you have defined an equals method that does not consider all properties of the elements as you would then loose imformation if you only stored the first of equal elements.</p>
+        <p>The following example shows a use-case where it makes sense to use a CompactMultiset as the equals method on <code>book</code> takes all properties into consideration, i.e. no information is lost if we just keep one object in the data structure. The program simply prints a histogram of a series of books.</p>
+        <pre><code>import com.sidewayscoding.immutable.CompactListMultiset
 
 object ShoppingCart {
-  
+
   case class Book(name: String,
                   creditedTo: Option[String],
                   publisher: Option[String],
                   publicationYear: Option[Int],
                   binding: Option[String])
-  
+
   def main(args: Array[String]) {
-    var shoppingCart = MergeableListMultiset[Book](
+
+    var shoppingCart = CompactListMultiset[Book](
        Book("Brave New Words: The Oxford Dictionary of Science Fiction", Some("Jeff Prucher"), Some("Oxford University Press"), Some(2007), Some("Hardcover"))
       ,Book("On Lisp", None, Some("Prentice Hall"), Some(1993), Some("Paperback"))
       ,Book("The Logic of Failure: Why Things Go Wrong and What We Can Do to Make Them Right", None, Some("Perseus Books Group"), Some(1996), Some("Paperback"))
@@ -63,30 +65,30 @@ object ShoppingCart {
       ,Book("Bluebeard", Some("Kurt Vonnegut, Jr."), Some("Delacorte Press"), Some(1987), Some("Hardcover"))
       ,Book("On Lisp", None, Some("Prentice Hall"), Some(1993), Some("Paperback"))
     )
-    
-    val histogram = shoppingCart.withMultiplicity.map { 
-      case (books, count) => "item: %s, count: %s".format(books.head.name, count)
-    }
-    
+
     println("Shopping cart contents")
-    println(histogram.mkString("\n"))
+    println((shoppingCart.multiplicities.map { case (book, count) =>
+      "item %s, count: %s".format(book.name, count)
+    }).mkString("\n"))
+
   }
+
 }</code></pre>
-<p>Another example is finding files with the same name in different directories in your hard-disk. We choose to model a file as a <code>case class</code> with the <code>filename</code> and the <code>path</code> but we define <code>equals</code> such that it only relies on the filename. In this case we don't want to use a MergeableMultiset we would loose important information (the path).</p>
+<p>Another example is finding files with the same name in different directories in your hard-disk. We choose to model a file as a <code>case class</code> with the <code>filename</code> and the <code>path</code> but we define <code>equals</code> such that it only relies on the filename. In this case we don't want to use a CompactMultiset as we would loose important information (the path).</p>
 <pre><code>import com.sidewayscoding.immutable.Multiset
 
 object DuplicateFileNames {
   def main(args: Array[String]) {
-    
+      // Our custom representation of a filename.
     case class FileName(name: String, path: List[String]) {
       override def equals(o: Any) = {
         o match {
-          case x: FileName => x.name == name
-          case _ => false
-        }
+        case x: FileName => x.name == name
+        case _ => false
+      }
       }
     }
-    
+
     val fakeDirPath = List("~", "fake", "dir")
     val tmpDirPath = List("~", "tmp", "dir")
 
@@ -104,12 +106,9 @@ object DuplicateFileNames {
       FileName("cat-image4.jpg", tmpDirPath))
 
     val duplicates = folderOne intersect folderTwo
-    
-    println("Found the following duplicates:")
-    duplicates.foreach { d => 
-      println("\t%s".format(d.path))
-    }
-    
+
+    println(duplicates.size)
+    println(duplicates)
   }
 }</code></pre>
         <h3>Feedback</h3>
