@@ -55,11 +55,11 @@ class FullListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]])
   def removed(a: A, eq: Equiv[A]) = {
     if (delegate.contains(a)) {
         val list = delegate.get(a).get
-        if (list.size == 1) {
+        if (list.size <= 1) {
           new FullListMultiset(delegate - a)
         } else {
           val toBeRemoved = list.filter( eq.equiv(_, a))
-          val newList = list.filterNot(_ == a) ++ toBeRemoved.tail
+          val newList = list.filterNot(eq.equiv(_, a)) ++ toBeRemoved.tail
           new FullListMultiset(delegate.updated(a, newList))
         }
       } else {
@@ -70,7 +70,7 @@ class FullListMultiset[A] private[immutable] (val delegate: ListMap[A, List[A]])
   def removedAll(a: A, eq: Equiv[A]) = {
     if (delegate.contains(a)) {
         val list = delegate.get(a).get
-        if (list.size == 1) {
+        if (list.size <= 1) {
           new FullListMultiset(delegate - a)
         } else {
           val newList = list.filterNot( eq.equiv(_, a))

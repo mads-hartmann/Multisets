@@ -4,6 +4,7 @@ import scala.util.Random
 import scala.annotation.tailrec
 import com.sidewayscoding.immutable.Multiset
 import com.sidewayscoding.FullMultiset
+import com.sidewayscoding.immutable.FullListMultiset
 
 /**
  * Finding a solution to TPS using a Genetic Algorithm.
@@ -19,6 +20,7 @@ object GeneticAlgorithm extends App {
   import Data._
 
   val N = 200
+  val MutationProbability = 3
   val initialPopulation = 100
 
   val citites = List(
@@ -31,47 +33,67 @@ object GeneticAlgorithm extends App {
     Point(2,0),
     Point(1,0))
 
-  var population: FullMultiset[Solution] =
-    FullMultiset((1 to initialPopulation).map(_ => randomSolution(citites)): _*)
+  var initialSolutions: List[Solution] =
+    List((1 to initialPopulation).map(_ => randomSolution(citites)): _*)
 
-  for (gen <- 1 until N) {
-    val picks = pickThreeRandom(population)
-    val best = picks.sortBy(_.fitness).take(2)
-    val offspring = {
-      val off = Solution(crossover(best.head, best.last), gen)
-      if ((Random.nextInt(100) + 1) < 3) mutation(off) else off
-    }
+  /*
+   * Presort the initial population into buckets so it's faster to pick
+   * solutions for the tournament.
+   */
 
-    // add the offspring
-    population = population + offspring
+  val buckets = Array(
+    FullMultiset[Solution](),
+    FullMultiset[Solution](),
+    FullMultiset[Solution]())
 
-    // remove the oldest solution from the generation, resolving ties by fitness
-    val smallest = picks.map(_.generation).sorted.head
-    val candidatesForRemoval = picks.filter(_.generation == smallest)
-    if (candidatesForRemoval.size > 1) {
-      population = {
-        val toBeRemoved = candidatesForRemoval.sortBy( s => s.fitness).last
-        removeFromSolutions(population, toBeRemoved)
-      }
-    } else {
-      population = removeFromSolutions(population, candidatesForRemoval.head)
-    }
+  val randoms = (1 to initialPopulation).map( _ => Random.nextInt(3) )
+
+  initialSolutions.zip(randoms).foreach { case (p,i) =>
+    buckets(i % 3) = buckets(i % 3) + p
   }
 
-  // Printing the results in a pretty way
+  val START = System.currentTimeMillis()
 
-  val best = population.minBy(p => p.fitness)
+  /*
+   * Proceed for N generations
+   */
+
+  for (gen <- 1 until N) {
+    val picks = pickThreeRandom(buckets)
+    val best = picks.sortBy(_._2.fitness).take(2)
+    val offspring = {
+      val off = Solution(crossover(best.head._2, best.last._2), gen)
+      if ((Random.nextInt(100)) < MutationProbability) mutation(off) else off
+    }
+
+    // add the offspring and remove the oldest.
+    buckets(gen % 3) = buckets(gen % 3) + offspring
+
+    // remove the oldest solution from the generation, resolving ties by fitness
+    val smallest = picks.sortBy( p => p._2.generation).head
+    val candidatesForRemoval = picks.filter(_._2.generation == smallest._2.generation)
+    val (bucketCount, solution) = if (candidatesForRemoval.size > 1) {
+      candidatesForRemoval.sortBy( s => s._2.fitness).last
+    } else candidatesForRemoval.head
+    buckets(bucketCount) = buckets(bucketCount).removed(solution, totalEq)
+  }
+
+  val END = System.currentTimeMillis()
+
+  // Printing the results in a pretty way
+  val allSolutions: FullMultiset[Solution] = buckets.fold(FullMultiset())(_ ++ _)
+  val best = allSolutions.minBy(p => p.fitness)
 
   println("Did %s generations with an initial population of %s\n".format(N, initialPopulation))
   println("The best solutions have a round-trip cost of: %s and can be acheived using".format(best.fitness))
 
-  population.filter( s => s.fitness == best.fitness).foreach { s =>
+  allSolutions.filter( s => s.fitness == best.fitness).foreach { s =>
     println("\t%s".format(s.seq.map( p => "(%s,%S)".format(p.x,p.y)).mkString(";")))
   }
 
   println("")
 
-  population.copies.toList.sortBy( tup => tup._1.fitness).foreach {
+  allSolutions.copies.toList.sortBy( tup => tup._1.fitness).foreach {
     case (elem, elems) => println("Fitness: %f\tcount: %s\tsolution:%s\tgenerations: %s".format(
         elems.head.fitness,
         elems.size,
@@ -80,14 +102,16 @@ object GeneticAlgorithm extends App {
        ))
   }
 
-  /** 
+  println("It took: " + (END - START) )
+
+  /**
    * Mutation is the generic name given to those variation operators that use
    * only one parent and create one child by applying some kind of randomized
    * change to the representation. In our case we're using Inversion Mutation.
    *
    * Inversion mutation works by randomly selecting two positions in the string
    * and reversing the order in which the values appear between those positions.
-   * 
+   *
    * - Introduction to Evolutionary Computing
    */
   def mutation(s1: Solution): Solution = {
@@ -183,6 +207,12 @@ object Data {
     }
   }
 
+  implicit val totalEq = new Equiv[Solution] {
+    def equiv(x1: Solution, x2: Solution): Boolean = {
+      x1.seq == x2.seq && x1.generation == x2.generation
+    }
+  }
+
   // Euclidean distance between two points.
   def distance(p1: Point, p2: Point) = {
     Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2))
@@ -201,7 +231,7 @@ object Data {
     Solution(rec(Nil, places), 0)
   }
 
-  // Generate `x` unique random numbers with the maximum value defiend by `roof`
+  // Generate `x` unique random numbers with the maximum value defined by `roof`
   def uniqueRandom(x: Int, roof: Int): Seq[Int] = {
     assert(x < roof, "The number of unique numbers should be smaller than the max allowed value")
     @tailrec def rec(current: List[Int], remaining: Int): Seq[Int] = {
@@ -219,21 +249,9 @@ object Data {
     rec(Nil, x)
   }
 
-  // Because Multisets aren't indexed there isn't a nice way to pick three random
-  // elements.
-  def pickThreeRandom(options: FullMultiset[Solution]): Seq[Solution] = {
-    val randoms = uniqueRandom(2, options.size-2)
-    val (as, bs) = options.splitAt(randoms.head)
-    val (xs, ys) = options.splitAt(randoms.last)
-    List(as.headOption,
-      bs.headOption,
-      xs.headOption,
-      ys.headOption).flatten.take(3)
-  }
-
-  // Remove one of many possible duplicates.
-  def removeFromSolutions(solutions: FullMultiset[Solution], x: Solution): FullMultiset[Solution] = {
-    val many = solutions.filter(_.hashCode == x.hashCode)
-    solutions.filterNot(_.hashCode == x.hashCode) ++ many.tail
+  def pickThreeRandom(buckets: Array[FullMultiset[Solution]]): Seq[(Int, Solution)] = {
+    for ( i <- 0 until 3) yield {
+      (i, buckets(i).head)
+    }
   }
 }
