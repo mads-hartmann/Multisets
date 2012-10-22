@@ -81,7 +81,7 @@ object FullMultisetCheck extends Properties("FullMultiset") {
   // TODO: use special Equiv[TestPerson]
   property("removedAll with equiv") = forAll(peopleMultisetContainingPerson) {
     ((ms: FullMultiset[TestPerson], p: TestPerson) => {
-      (ms.multiplicity(p) > 0)                :| "prop #1") &&
+      (ms.multiplicity(p) > 0)                :| "prop #1" &&
       (ms.removedAll(p).multiplicity(p) == 0) :| "prop #2" }).tupled
   }
 
