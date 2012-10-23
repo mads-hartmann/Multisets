@@ -12,6 +12,8 @@ trait MultisetLike[A, +This <: Multiset[A] with MultisetLike[A, This]] extends I
 
   self =>
 
+  def empty: This
+
   /**
    * The number of occurrences of `a` in this Multiset.
    */
