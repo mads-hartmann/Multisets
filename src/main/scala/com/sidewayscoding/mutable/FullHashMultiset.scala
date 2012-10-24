@@ -17,30 +17,64 @@ class FullHashMultiset[A] private (private val delegate: FlatHashTable[Bucket[A]
   with FullMultisetLike[A, FullHashMultiset[A]]
   with com.sidewayscoding.FullMultisetLike[A, FullHashMultiset[A]]{
 
-  override def companion: GenericCompanion[FullHashMultiset] = FullHashMultiset
-  override def seq = FullHashMultiset.this
-  override def newBuilder: Builder[A, FullHashMultiset[A]] = FullHashMultiset.newBuilder
+  override def companion: GenericCompanion[FullHashMultiset] =
+    FullHashMultiset
 
-  def multiplicities = throw new NotImplementedException
-  def copies = throw new NotImplementedException
-  def get(a: A) = throw new NotImplementedException
-  
-  def iterator = delegate.iterator.map(_.list).flatten
-  
-  override def size: Int = throw new NotImplementedException
-  def multiplicity(a: A) = throw new NotImplementedException
-  def remove(a: A, eq: Equiv[A]): Boolean = throw new NotImplementedException
-  def removeAll(a: A, eq: Equiv[A]): Boolean = throw new NotImplementedException
+  override def seq =
+    FullHashMultiset.this
 
-  def -=(a: A): this.type = {
+  override def newBuilder: Builder[A, FullHashMultiset[A]] =
+    FullHashMultiset.newBuilder
+
+  def multiplicity(a: A): Int =
+    delegate.findEntry(Bucket(a)).map(_.list.size).getOrElse(0)
+
+  def multiplicities: Map[A, Int] =
+    delegate.iterator.map( b => (b.list.head, b.list.size)).toMap
+
+  def copies: Map[A, Seq[A]] =
+    delegate.iterator.map( b => (b.list.head, b.list)).toMap
+
+  def get(a: A): Seq[A] =
+    delegate.findEntry(Bucket(a)).map(_.list).getOrElse(Nil)
+
+  def iterator =
+    delegate.iterator.map(_.list).flatten
+
+  override def size: Int =
+    delegate.iterator.map(_.list.size).sum
+
+  def remove(a: A, eq: Equiv[A]): Boolean = {
     if (delegate.containsEntry(Bucket(a))) {
-      val old = delegate.findEntry(Bucket(a)).get
-      delegate.removeEntry(Bucket(a))
-      if (old.size > 1) {
-        delegate.addEntry(old - a)
+      val old      = delegate.findEntry(Bucket(a)).get
+      val toStay   = old.list.filterNot(eq.equiv(_, a))
+      val toRemove = old.list.filter(eq.equiv(_, a))
+      if (toRemove.size > 0) {
+        delegate.removeEntry(Bucket(a))
+        val removed = if (toRemove.size == 1) Nil else toRemove.tail
+        val staying = toStay ::: removed
+        if (staying.size > 0) {
+          delegate.addEntry(Bucket(staying))
+        }
       }
+      true
+    } else {
+      false
     }
-    this
+  }
+
+  def removeAll(a: A, eq: Equiv[A]): Boolean = {
+    if (delegate.containsEntry(Bucket(a))) {
+      val old      = delegate.findEntry(Bucket(a)).get
+      val toStay   = old.list.filterNot(eq.equiv(_, a))
+      delegate.removeEntry(Bucket(a))
+      if (toStay.size > 0) {
+        delegate.addEntry(Bucket(toStay))
+      }
+      true
+    } else {
+      false
+    }
   }
 
   def +=(a: A): this.type = {
@@ -53,9 +87,6 @@ class FullHashMultiset[A] private (private val delegate: FlatHashTable[Bucket[A]
     }
     this
   }
-
-  def removed(a: A, eq: Equiv[A]): this.type = throw new NotImplementedException
-  def removedAll(a: A, eq: Equiv[A]): this.type = throw new NotImplementedException
 
 }
 

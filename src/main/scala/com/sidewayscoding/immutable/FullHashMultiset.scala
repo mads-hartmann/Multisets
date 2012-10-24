@@ -50,6 +50,8 @@ class FullHashMultiset[A] private[immutable] (private val delegate: HashMap[A, L
     val newList = a :: delegate.getOrElse(a, Nil)
     new FullHashMultiset(delegate.updated(a, newList))
   }
+  
+  def -(a: A) = removed(a, implicitly[Equiv[A]])
 
   def removed(a: A, eq: Equiv[A]) = {
     if (delegate.contains(a)) {
