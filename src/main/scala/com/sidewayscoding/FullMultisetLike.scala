@@ -20,7 +20,7 @@ trait FullMultisetLike[A, +This <: FullMultiset[A] with FullMultisetLike[A, This
 
   override def removed(a: A): This = removed(a, implicitly[Equiv[A]])
 
-  override def removedAll(a: A): This = removed(a, implicitly[Equiv[A]])
+  override def removedAll(a: A): This = removedAll(a, implicitly[Equiv[A]])
 
   /**
    * Removes the first element in this multiset that are equal to `a`with respect

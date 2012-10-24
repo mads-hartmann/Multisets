@@ -71,11 +71,11 @@ class FullHashMultiset[A] private[immutable] (private val delegate: HashMap[A, L
   def removedAll(a: A, eq: Equiv[A]) = {
     if (delegate.contains(a)) {
         val list = delegate.get(a).get
-        if (list.size <= 1) {
+        val staying = list.filterNot( eq.equiv(_, a))
+        if (staying.isEmpty) {
           new FullHashMultiset(delegate - a)
-        } else {
-          val newList = list.filterNot( eq.equiv(_, a))
-          new FullHashMultiset(delegate.updated(a, newList))
+        } else { 
+          new FullHashMultiset(delegate.updated(a, staying))
         }
       } else {
       FullHashMultiset.this

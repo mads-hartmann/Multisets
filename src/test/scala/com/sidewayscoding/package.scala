@@ -65,4 +65,10 @@ package object sidewayscoding {
        p <- arbitraryPerson
     mset <- genPeopleMultiset
   } yield (mset + p, p)
+
+  val peopleMultisetContainingPeople: Gen[(FullMultiset[TestPerson], TestPerson)] = for {
+    mset <- genPeopleMultiset
+       p <- arbitraryPerson
+    val all = mset + p + p
+  } yield (all, p)
 }

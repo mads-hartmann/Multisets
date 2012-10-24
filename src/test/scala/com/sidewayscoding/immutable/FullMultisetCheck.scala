@@ -8,7 +8,7 @@ import Arbitrary.arbitrary
 import org.scalacheck.util.Buildable
 import com.sidewayscoding.MultisetBuilder
 
-object FullMultisetCheck extends Properties("FullMultiset") {
+object FullMultisetCheck extends Properties("immutable.FullMultiset") {
 
   import com.sidewayscoding._
 
@@ -72,16 +72,16 @@ object FullMultisetCheck extends Properties("FullMultiset") {
       ms.removed(p).multiplicity(p) == (ms.multiplicity(p) - 1) ).tupled
   }
 
-  property("removedAll") = forAll(peopleMultisetContainingPerson) {
-    ((ms: FullMultiset[TestPerson], p: TestPerson) =>
+  property("removedAll") = forAll(peopleMultisetContainingPeople)(t => {
+      val (ms: FullMultiset[TestPerson], p: TestPerson) = t
       (ms.multiplicity(p) > 0)                :| "prop #1" &&
-      (ms.removedAll(p).multiplicity(p) == 0) :| "prop #2" ).tupled
-  }
+      (ms.removedAll(p).multiplicity(p) == 0) :| "prop #2"
+    })
 
   // TODO: use special Equiv[TestPerson]
-  property("removedAll with equiv") = forAll(peopleMultisetContainingPerson) {
+  property("removedAll with equiv") = forAll(peopleMultisetContainingPeople) {
     ((ms: FullMultiset[TestPerson], p: TestPerson) => {
-      (ms.multiplicity(p) > 0)                :| "prop #1" &&
+      (ms.multiplicity(p) > 1)                :| "prop #1" &&
       (ms.removedAll(p).multiplicity(p) == 0) :| "prop #2" }).tupled
   }
 
