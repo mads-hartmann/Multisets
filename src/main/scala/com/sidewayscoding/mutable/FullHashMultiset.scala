@@ -25,7 +25,7 @@ class FullHashMultiset[A] private (private val delegate: FlatHashTable[Bucket[A]
   def copies = throw new NotImplementedException
   def get(a: A) = throw new NotImplementedException
   
-  def iterator = delegate.iterator.map( (b: Bucket[A]) => b.list ).flatten
+  def iterator = delegate.iterator.map(_.list).flatten
   
   override def size: Int = throw new NotImplementedException
   def multiplicity(a: A) = throw new NotImplementedException
@@ -67,8 +67,11 @@ object FullHashMultiset extends MutableMultisetFactory[FullHashMultiset] {
 }
 
 private case class Bucket[A](val list: List[A]) {
-  override def equals(o: Any) = list.head.equals(o)
-  override def hashCode = list.head.hashCode
+  override def equals(o: Any) = o match {
+    case Bucket(x) => list.head == x.head
+    case _ => false
+  }
+  override def hashCode = list.head.hashCode()
   def +(a: A): Bucket[A] = new Bucket(a :: list)
   def -(a: A): Bucket[A] = new Bucket(list.tail)
   def size: Int = list.size
