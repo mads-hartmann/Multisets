@@ -4,9 +4,9 @@ import org.scalacheck.util.Buildable
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary
 
-trait FullMultisetCheckHelper {
+trait MultisetCheckHelper {
 
-  type T[A] <: FullMultiset[A] with MultisetLike[A, T[A]]
+  type T[A] <: Multiset[A] with MultisetLike[A, T[A]]
 
   def empty[A]: T[A]
 
@@ -72,9 +72,10 @@ trait FullMultisetCheckHelper {
   } yield (mset, map)
 
   val peopleMultisetContainingPerson: Gen[(T[TestPerson], TestPerson)] = for {
-    p <- arbitraryPerson
     mset <- genPeopleMultiset
-  } yield (mset + p, p)
+    p <- arbitraryPerson
+    val all = mset + p
+  } yield (all, p)
 
   val peopleMultisetContainingPeople: Gen[(T[TestPerson], TestPerson)] = for {
     mset <- genPeopleMultiset
