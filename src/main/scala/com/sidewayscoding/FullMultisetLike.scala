@@ -18,28 +18,17 @@ trait FullMultisetLike[A, +This <: FullMultiset[A] with FullMultisetLike[A, This
    */
   def get(a: A): Seq[A]
 
-  override def removed(a: A): This = removed(a, implicitly[Equiv[A]])
+  override def removed(a: A): This = removed(a, b => implicitly[Equiv[A]].equiv(a,b))
 
-  override def removedAll(a: A): This = removedAll(a, implicitly[Equiv[A]])
-
-  /**
-   * Removes the first element in this multiset that are equal to `a`with respect
-   * to the `equals` method defined by `eq`.
-   * 
-   * The `equals` method defined by `eq` must be more strict than the equals method
-   * defined by the element, that is, for any elements X and Y if X.equals(Y) is true
-   * than eq.equals(X,Y) must also return true but not vice-versa.
-   * 
-   */
-  def removed(a: A, eq: Equiv[A]): This
+  override def removedAll(a: A): This = removedAll(a, b => implicitly[Equiv[A]].equiv(a,b))
 
   /**
-   * Removes all elements in this multiset that are equal to `a`with respect
-   * to the `equals` method defined by `eq`.
-   * 
-   * The `equals` method defined by `eq` must be more strict than the equals method
-   * defined by the element, that is, for any elements X and Y if X.equals(Y) is true
-   * than eq.equals(X,Y) must also return true but not vice-versa.
+   * Removes the first copy of `a` where `eq` returns true.
    */
-  def removedAll(a: A, eq: Equiv[A]): This
+  def removed(a: A, eq: A => Boolean): This
+
+  /**
+   * Removes all copies of `a` where `eq` returns true. 
+   */
+  def removedAll(a: A, eq: A => Boolean): This
 }

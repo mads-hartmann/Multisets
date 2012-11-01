@@ -44,11 +44,11 @@ class FullHashMultiset[A] private (private val delegate: FlatHashTable[Bucket[A]
   override def size: Int =
     delegate.iterator.map(_.list.size).sum
 
-  def remove(a: A, eq: Equiv[A]): Boolean = {
+  def remove(a: A, eq: A => Boolean): Boolean = {
     if (delegate.containsEntry(Bucket(a))) {
       val old      = delegate.findEntry(Bucket(a)).get
-      val toStay   = old.list.filterNot(eq.equiv(_, a))
-      val toRemove = old.list.filter(eq.equiv(_, a))
+      val toStay   = old.list.filterNot(eq)
+      val toRemove = old.list.filter(eq)
       if (toRemove.size > 0) {
         delegate.removeEntry(Bucket(a))
         val removed = if (toRemove.size == 1) Nil else toRemove.tail
@@ -63,10 +63,10 @@ class FullHashMultiset[A] private (private val delegate: FlatHashTable[Bucket[A]
     }
   }
 
-  def removeAll(a: A, eq: Equiv[A]): Boolean = {
+  def removeAll(a: A, eq: A => Boolean): Boolean = {
     if (delegate.containsEntry(Bucket(a))) {
       val old      = delegate.findEntry(Bucket(a)).get
-      val toStay   = old.list.filterNot(eq.equiv(_, a))
+      val toStay   = old.list.filterNot(eq)
       delegate.removeEntry(Bucket(a))
       if (toStay.size > 0) {
         delegate.addEntry(Bucket(toStay))

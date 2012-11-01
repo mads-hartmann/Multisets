@@ -75,7 +75,7 @@ object GeneticAlgorithm extends App {
     val (bucketCount, solution) = if (candidatesForRemoval.size > 1) {
       candidatesForRemoval.sortBy( s => s._2.fitness).last
     } else candidatesForRemoval.head
-    buckets(bucketCount) = buckets(bucketCount).removed(solution, totalEq)
+    buckets(bucketCount) = buckets(bucketCount).removed(solution, x => x.seq == solution.seq && x.generation == solution.generation)
   }
 
   val END = System.currentTimeMillis()
@@ -206,12 +206,6 @@ object Data {
           (next, dist + distance(prev, next))
       }
       dist + distance(last, start)
-    }
-  }
-
-  implicit val totalEq = new Equiv[Solution] {
-    def equiv(x1: Solution, x2: Solution): Boolean = {
-      x1.seq == x2.seq && x1.generation == x2.generation
     }
   }
 

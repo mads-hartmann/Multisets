@@ -50,17 +50,15 @@ class FullHashMultiset[A] private[immutable] (private val delegate: HashMap[A, L
     val newList = a :: delegate.getOrElse(a, Nil)
     new FullHashMultiset(delegate.updated(a, newList))
   }
-  
-  def -(a: A) = removed(a, implicitly[Equiv[A]])
 
-  def removed(a: A, eq: Equiv[A]) = {
+  def removed(a: A, eq: A => Boolean) = {
     if (delegate.contains(a)) {
         val list = delegate.get(a).get
         if (list.size <= 1) {
           new FullHashMultiset(delegate - a)
         } else {
-          val toBeRemoved = list.filter( eq.equiv(_, a))
-          val newList = list.filterNot(eq.equiv(_, a)) ++ toBeRemoved.tail
+          val toBeRemoved = list.filter(eq)
+          val newList = list.filterNot(eq) ++ toBeRemoved.tail
           new FullHashMultiset(delegate.updated(a, newList))
         }
       } else {
@@ -68,10 +66,10 @@ class FullHashMultiset[A] private[immutable] (private val delegate: HashMap[A, L
     }
   }
 
-  def removedAll(a: A, eq: Equiv[A]) = {
+  def removedAll(a: A, eq: A => Boolean) = {
     if (delegate.contains(a)) {
         val list = delegate.get(a).get
-        val staying = list.filterNot( eq.equiv(_, a))
+        val staying = list.filterNot(eq)
         if (staying.isEmpty) {
           new FullHashMultiset(delegate - a)
         } else { 
