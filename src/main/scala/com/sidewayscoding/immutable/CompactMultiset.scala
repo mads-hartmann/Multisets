@@ -6,7 +6,7 @@ import com.sidewayscoding.GenericMultisetTemplate
 import com.sidewayscoding.CompactMultisetLike
 import com.sidewayscoding.MultisetFactory
 
-trait CompactMultiset[A] extends Iterable[A]
+trait CompactMultiset[A] extends Multiset[A]
                             with com.sidewayscoding.CompactMultiset[A]
                             with GenericMultisetTemplate[A, CompactMultiset]
                             with CompactMultisetLike[A, CompactMultiset[A]] {

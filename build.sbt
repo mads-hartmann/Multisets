@@ -6,6 +6,8 @@ organization := "com.sidewayscoding"
 
 scalaVersion := "2.9.2"
 
+// scalacOptions in (Compile, doc) += "-diagrams"
+
 resolvers ++= Seq(
   "Sonatype Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
   "Sonatype Releases" at "http://oss.sonatype.org/content/repositories/releases"

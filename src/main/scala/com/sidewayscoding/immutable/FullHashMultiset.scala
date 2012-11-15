@@ -82,7 +82,7 @@ class FullHashMultiset[A] private[immutable] (private val delegate: HashMap[A, L
 
 }
 
-private class ListMultisetIterator[A](private val tm: HashMap[A, List[A]]) extends Iterator[A] {
+private class ListMultisetIterator[A](private val tm: Map[A, List[A]]) extends Iterator[A] {
 
   private val mapIterator = tm.iterator
   private var listIterator: Option[Iterator[A]] = None

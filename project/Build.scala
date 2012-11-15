@@ -6,7 +6,6 @@ import java.io.File
 object Multisets extends Build {
 
  /* tasks and settings */
-
  val javaCommand = TaskKey[String](
    "java-command",
    "Creates a java vm command for launching a process.")
@@ -34,8 +33,7 @@ object Multisets extends Build {
  }
 
  /* projects */
-
- lazy val myproject = Project(
+ lazy val project = Project(
    "Multisets",
    file("."),
    settings = Defaults.defaultSettings ++ Seq(runBenchTask, javaCommandSetting)

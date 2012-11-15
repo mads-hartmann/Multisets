@@ -4,14 +4,9 @@ import scala.collection.generic.GenericCompanion
 import scala.collection.generic.CanBuildFrom
 import com.sidewayscoding.GenericMultisetTemplate
 
-// TODO: Seems broken that I have to extend both com.sidewayscoding.* and com.sidewayscoding.mutable.*. The 
-// mutable version should extend com.sidewayscoding.* copies so it shouldn't really be a problem..
-trait FullMultiset[A] extends Iterable[A]
-                         with Multiset[A]
-                         with com.sidewayscoding.FullMultiset[A]
+trait FullMultiset[A] extends Multiset[A]
                          with GenericMultisetTemplate[A, FullMultiset]
-                         with FullMultisetLike[A, FullMultiset[A]]
-                         with com.sidewayscoding.FullMultisetLike[A, FullMultiset[A]] {
+                         with FullMultisetLike[A, FullMultiset[A]] {
 
   override def companion: GenericCompanion[FullMultiset] = FullMultiset
   override def seq: FullMultiset[A] = this
