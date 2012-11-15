@@ -18,10 +18,6 @@ trait FullMultisetLike[A, +This <: FullMultiset[A] with FullMultisetLike[A, This
    */
   def get(a: A): Seq[A]
 
-  override def removed(a: A): This = removed(a, b => implicitly[Equiv[A]].equiv(a,b))
-
-  override def removedAll(a: A): This = removedAll(a, b => implicitly[Equiv[A]].equiv(a,b))
-
   /**
    * Removes the first copy of `a` where `eq` returns true.
    */

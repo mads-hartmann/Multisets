@@ -7,6 +7,7 @@ import scala.collection.immutable.HashMap
 import com.sidewayscoding.FullMultisetLike
 import com.sidewayscoding.GenericMultisetTemplate
 import scala.collection.generic.GenericCompanion
+import com.sidewayscoding.MapBasedFullMultiset
 
 
 object FullHashMultiset extends ImmutableMultisetFactory[FullHashMultiset] {
@@ -21,66 +22,17 @@ object FullHashMultiset extends ImmutableMultisetFactory[FullHashMultiset] {
  * the equals method of the elements you add obey the hashCode specification 
  * defined here http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.html#hashCode()
  */
-class FullHashMultiset[A] private[immutable] (private val delegate: HashMap[A, List[A]]) 
+class FullHashMultiset[A] private[immutable] (protected val delegate: HashMap[A, List[A]]) 
   extends FullMultiset[A]
      with GenericMultisetTemplate[A, FullHashMultiset]
-     with FullMultisetLike[A, FullHashMultiset[A]] {
+     with FullMultisetLike[A, FullHashMultiset[A]] 
+     with MapBasedFullMultiset[A, FullHashMultiset[A], HashMap[A, List[A]]]{
 
   override def companion: GenericCompanion[FullHashMultiset] = FullHashMultiset
   override def seq = FullHashMultiset.this
-
-  def multiplicities = delegate.mapValues(_.size)
-
-  def copies: Map[A, Seq[A]] = delegate
-
-  def get(a: A): Seq[A] = delegate.getOrElse(a, Nil)
-
-  def iterator: Iterator[A] = new ListMultisetIterator(delegate)
-
-  override def newBuilder: Builder[A, FullHashMultiset[A]] = FullHashMultiset.newBuilder
-
-  override def size: Int = {
-    delegate.map( _._2.size ).sum
-  }
-
-  def multiplicity(a: A): Int = {
-    delegate.get(a).map( _.size ).getOrElse(0)
-  }
-
-  def +(a: A) = {
-    val newList = a :: delegate.getOrElse(a, Nil)
-    new FullHashMultiset(delegate.updated(a, newList))
-  }
-
-  def removed(a: A, eq: A => Boolean) = {
-    if (delegate.contains(a)) {
-        val list = delegate.get(a).get
-        if (list.size <= 1) {
-          new FullHashMultiset(delegate - a)
-        } else {
-          val toBeRemoved = list.filter(eq)
-          val newList = list.filterNot(eq) ++ toBeRemoved.tail
-          new FullHashMultiset(delegate.updated(a, newList))
-        }
-      } else {
-      FullHashMultiset.this
-    }
-  }
-
-  def removedAll(a: A, eq: A => Boolean) = {
-    if (delegate.contains(a)) {
-        val list = delegate.get(a).get
-        val staying = list.filterNot(eq)
-        if (staying.isEmpty) {
-          new FullHashMultiset(delegate - a)
-        } else { 
-          new FullHashMultiset(delegate.updated(a, staying))
-        }
-      } else {
-      FullHashMultiset.this
-    }
-  }
-
+  
+  def fromMap(a: HashMap[A, List[A]]) = new FullHashMultiset(a)
+  def emptySeq: Seq[A] = Nil
 }
 
 class ListMultisetIterator[A](private val tm: Map[A, Seq[A]]) extends Iterator[A] {
