@@ -7,19 +7,19 @@ import com.sidewayscoding.ElementSeq
 trait MutableMapBasedMultiset[A, +This <: Multiset[A] with MultisetLike[A, This], S[A] <: Seq[A], MapRep <: Map[A, S[A]]] { this: This =>
 
   protected val delegate: MapRep
-  
+
   def fromMap(a: MapRep): This
   def emptySeq: Seq[A]
-  
+
   /**
    * Return the multiplicity of the element `a` in the multiset.
    */
   def multiplicity(a: A): Int = {
-    delegate.get(a).map( _.size ).getOrElse(0)
+    delegate.get(a).map(_.size).getOrElse(0)
   }
 
   /**
-   * Returns the total number of elements in the multiset, i.e. the 
+   * Returns the total number of elements in the multiset, i.e. the
    * sum of the multiplicity of each element
    */
   override def size: Int = delegate.values.map(_.size).sum
@@ -31,18 +31,18 @@ trait MutableMapBasedMultiset[A, +This <: Multiset[A] with MultisetLike[A, This]
   def multiplicities = delegate.mapValues(_.size).toMap
 
   def iterator: Iterator[A] = new com.sidewayscoding.immutable.ListMultisetIterator(delegate.toMap)
-  
+
   def +=(elem: A): this.type = {
     val seq = delegate.getOrElse(elem, emptySeq) :+ elem
     delegate.update(elem, seq.asInstanceOf[S[A]])
     this
   }
-  
-  def -= (a: A): this.type = {
+
+  def -=(a: A): this.type = {
     if (delegate.contains(a)) {
       val seq = delegate.get(a).get
       if (seq.size <= 1) {
-        delegate - a
+        delegate -= a
       } else {
         val toBeRemoved = seq.filter(_ == a)
         val newSeq = seq.filterNot(_ == a) ++ toBeRemoved.tail
@@ -52,15 +52,14 @@ trait MutableMapBasedMultiset[A, +This <: Multiset[A] with MultisetLike[A, This]
     this
   }
 
-
   def removeAll(a: A): Boolean = {
     if (delegate.contains(a)) {
       val list = delegate.get(a).get
       val staying = list.filterNot(_ == a)
       if (staying.isEmpty) {
-        delegate - a
+        delegate -= a
       } else {
-        delegate.updated(a, staying)
+        delegate.update(a, staying.asInstanceOf[S[A]])
       }
       true
     } else {
@@ -73,11 +72,18 @@ trait MutableMapBasedMultiset[A, +This <: Multiset[A] with MultisetLike[A, This]
 trait MutableMapBasedFullMultiset[A, +This <: Multiset[A] with MultisetLike[A, This], S[A] <: Seq[A], MapRep <: Map[A, S[A]]]
   extends MutableMapBasedMultiset[A, This, S, MapRep] { this: This =>
 
+  def copies: scala.collection.Map[A, Seq[A]] = delegate.toMap
+
+  def get(a: A): Seq[A] = delegate.getOrElse(a, Nil)
+
+  override def remove(a: A): Boolean = remove(a, _ == a)
+  override def removeAll(a: A): Boolean = removeAll(a, _ == a)
+  
   def remove(a: A, eq: A => Boolean): Boolean = {
     if (delegate.contains(a)) {
       val seq = delegate.get(a).get
       if (seq.size <= 1) {
-        delegate - a
+        delegate -= a
         true
       } else {
         val toBeRemoved = seq.filter(eq)
@@ -95,9 +101,9 @@ trait MutableMapBasedFullMultiset[A, +This <: Multiset[A] with MultisetLike[A, T
       val list = delegate.get(a).get
       val staying = list.filterNot(eq)
       if (staying.isEmpty) {
-        delegate - a
+        delegate -= a
       } else {
-        delegate.updated(a, staying)
+        delegate.update(a, staying.asInstanceOf[S[A]])
       }
       true
     } else {

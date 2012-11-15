@@ -34,15 +34,13 @@ trait MultisetLike[A, +This <: Multiset[A] with MultisetLike[A, This]]
   }
 
   def remove(elem: A): Boolean = {
-    val r = this.multiplicity(elem) > 0
+    val r = this.multiplicity(elem)
     this -= elem
-    r
+    this.multiplicity(elem) < r
   }
   
   def removed(a: A): This = {
-    val c = this.clone()
-    c.remove(a)
-    c
+    this.clone() -= a
   }
   
   def removedAll(a: A): This = {

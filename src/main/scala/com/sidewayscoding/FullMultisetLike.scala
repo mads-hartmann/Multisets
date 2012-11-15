@@ -11,7 +11,7 @@ trait FullMultisetLike[A, +This <: FullMultiset[A] with FullMultisetLike[A, This
    * Returns a Map with each distinct element mapping to the sequences of elements that are
    * equal to it.
    */
-  def copies: Map[A, Seq[A]]
+  def copies: scala.collection.Map[A, Seq[A]]
 
   /**
    * Returns all the occurrences of `a`.
