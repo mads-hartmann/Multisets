@@ -8,15 +8,15 @@ import scala.collection.mutable.Builder
 import com.sidewayscoding.CompactMultisetLike
 import com.sidewayscoding.GenericMultisetTemplate
 
-object CompactListMultiset extends ImmutableCompactMultisetFactory[CompactListMultiset] {
+object CompactHashMultiset extends ImmutableCompactMultisetFactory[CompactHashMultiset] {
 
   override def empty[A] = apply()
 
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, CompactListMultiset[A]] =
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, CompactHashMultiset[A]] =
     multisetCanBuildFrom[A]
 
-  def apply[A](): CompactListMultiset[A] =
-    new CompactListMultiset[A](HashMap[A,Int]())
+  def apply[A](): CompactHashMultiset[A] =
+    new CompactHashMultiset[A](HashMap[A,Int]())
 
 }
 
@@ -27,17 +27,17 @@ object CompactListMultiset extends ImmutableCompactMultisetFactory[CompactListMu
  *  than one that has no obvious bugs) so it can be used to test more advanced
  *  implementations.
  */
-class CompactListMultiset[A] private[immutable] (val delegate: HashMap[A, Int]) extends CompactMultiset[A]
-                                                                                   with CompactMultisetLike[A, CompactListMultiset[A]]
-                                                                                   with GenericMultisetTemplate[A, CompactListMultiset] {
+class CompactHashMultiset[A] private[immutable] (val delegate: HashMap[A, Int]) extends CompactMultiset[A]
+                                                                                   with CompactMultisetLike[A, CompactHashMultiset[A]]
+                                                                                   with GenericMultisetTemplate[A, CompactHashMultiset] {
 
-  override def companion: GenericCompanion[CompactListMultiset] = CompactListMultiset
+  override def companion: GenericCompanion[CompactHashMultiset] = CompactHashMultiset
 
   def multiplicities = delegate
 
   def iterator: Iterator[A] = new MergeableListMultisetIterator(delegate)
 
-  override def newBuilder: Builder[A, CompactListMultiset[A]] = CompactListMultiset.newBuilder
+  override def newBuilder: Builder[A, CompactHashMultiset[A]] = CompactHashMultiset.newBuilder
 
   override def size: Int = delegate.values.sum
 
@@ -46,24 +46,24 @@ class CompactListMultiset[A] private[immutable] (val delegate: HashMap[A, Int]) 
   def +(a: A) = {
     val newCount    = delegate.get(a).map(_ + 1).getOrElse(1)
     val newDelegate = delegate.updated(a, newCount)
-    new CompactListMultiset(newDelegate)
+    new CompactHashMultiset(newDelegate)
   }
 
   def removed(a: A) = {
     if (delegate.contains(a)) {
       val count = delegate.get(a).get
       if (count <= 1) {
-        new CompactListMultiset(delegate - a)
+        new CompactHashMultiset(delegate - a)
       } else {
-        new CompactListMultiset(delegate.updated(a, count - 1))
+        new CompactHashMultiset(delegate.updated(a, count - 1))
       }
     } else {
-      CompactListMultiset.this
+      CompactHashMultiset.this
     }
   }
 
   def removedAll(a: A) = {
-    new CompactListMultiset(delegate - a)
+    new CompactHashMultiset(delegate - a)
   }
 
 }

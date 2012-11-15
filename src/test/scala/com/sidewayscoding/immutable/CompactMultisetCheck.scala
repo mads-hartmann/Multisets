@@ -9,9 +9,9 @@ object ImmutableCompactHashMultisetCheck extends Properties("immutable.CompactHa
                                        with MultisetCheckHelper
                                        with MultisetProperties {
 
-  type T[A] = com.sidewayscoding.immutable.CompactListMultiset[A]
-  def empty[A] = com.sidewayscoding.immutable.CompactListMultiset.empty[A]
-  def create[A](as: A*) = com.sidewayscoding.immutable.CompactListMultiset.apply(as:_*)
+  type T[A] = com.sidewayscoding.immutable.CompactHashMultiset[A]
+  def empty[A] = com.sidewayscoding.immutable.CompactHashMultiset.empty[A]
+  def create[A](as: A*) = com.sidewayscoding.immutable.CompactHashMultiset.apply(as:_*)
 
 }
 

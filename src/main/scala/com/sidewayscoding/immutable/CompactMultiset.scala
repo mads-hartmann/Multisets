@@ -19,7 +19,7 @@ trait CompactMultiset[A] extends Multiset[A]
 object CompactMultiset extends ImmutableCompactMultisetFactory[CompactMultiset] {
 
   override def empty[A]: CompactMultiset[A] =
-    CompactListMultiset.empty[A]
+    CompactHashMultiset.empty[A]
 
   implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, CompactMultiset[A]] =
     multisetCanBuildFrom[A]
