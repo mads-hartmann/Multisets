@@ -15,9 +15,6 @@ trait FullMultisetLike[A, +This <: FullMultiset[A] with FullMultisetLike[A, This
 
   override def remove(elem: A): Boolean = remove(elem, implicitly[Equiv[A]].equiv(elem,_))
   override def removeAll(elem: A): Boolean = removeAll(elem, implicitly[Equiv[A]].equiv(elem,_))
-
-  def removedAll(a: A) = removedAll(a, _ == a)
-  def removed(a: A) = removed(a, _ == a)
   
   def removed(a: A, eq: A => Boolean): This = {
     val c = this.clone()
