@@ -1,7 +1,8 @@
 package com.sidewayscoding.mutable
 
 trait FullMultisetLike[A, +This <: FullMultiset[A] with FullMultisetLike[A, This]]
-  extends MultisetLike[A, This] {
+  extends MultisetLike[A, This]
+     with com.sidewayscoding.FullMultisetLike[A, This] {
 
   def remove(elem: A, eq: A => Boolean): Boolean
 
@@ -13,7 +14,6 @@ trait FullMultisetLike[A, +This <: FullMultiset[A] with FullMultisetLike[A, This
   }
 
   override def remove(elem: A): Boolean = remove(elem, implicitly[Equiv[A]].equiv(elem,_))
-
   override def removeAll(elem: A): Boolean = removeAll(elem, implicitly[Equiv[A]].equiv(elem,_))
 
   def removed(a: A, eq: A => Boolean): This = {

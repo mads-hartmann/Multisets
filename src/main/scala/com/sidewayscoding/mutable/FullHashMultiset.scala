@@ -8,14 +8,10 @@ import scala.collection.generic.GenericCompanion
 import sun.reflect.generics.reflectiveObjects.NotImplementedException
 import scala.collection.mutable.Builder
 
-// TODO: Something is wrong with the inheritance. See mutable.FullMultiset for a more descriptive note.
 class FullHashMultiset[A] private (private val delegate: FlatHashTable[Bucket[A]]) 
-  extends Multiset[A]
-  with FullMultiset[A]
-  with com.sidewayscoding.FullMultiset[A]
-  with GenericMultisetTemplate[A, FullHashMultiset]
-  with FullMultisetLike[A, FullHashMultiset[A]]
-  with com.sidewayscoding.FullMultisetLike[A, FullHashMultiset[A]]{
+  extends FullMultiset[A]
+     with GenericMultisetTemplate[A, FullHashMultiset]
+     with FullMultisetLike[A, FullHashMultiset[A]] {
 
   override def companion: GenericCompanion[FullHashMultiset] =
     FullHashMultiset

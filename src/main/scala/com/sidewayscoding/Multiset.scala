@@ -20,8 +20,8 @@ import scala.collection.generic.CanBuildFrom
  * then loose imformation if you only stored the first of equal elements.
  */
 trait Multiset[A] extends Iterable[A]
-                     with MultisetLike[A, Multiset[A]]
                      with GenIterable[A]
+                     with MultisetLike[A, Multiset[A]]
                      with GenericMultisetTemplate[A, Multiset]{
 
   override def companion: GenericCompanion[Multiset] = Multiset

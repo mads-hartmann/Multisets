@@ -6,7 +6,7 @@ import com.sidewayscoding.GenericMultisetTemplate
 import com.sidewayscoding.FullMultisetLike
 import com.sidewayscoding.MultisetFactory
 
-trait FullMultiset[A] extends Iterable[A]
+trait FullMultiset[A] extends Multiset[A]
                          with com.sidewayscoding.FullMultiset[A]
                          with GenericMultisetTemplate[A, FullMultiset]
                          with FullMultisetLike[A, FullMultiset[A]] {

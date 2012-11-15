@@ -16,10 +16,10 @@ import scala.collection.mutable.Builder
  */
 trait MultisetLike[A, +This <: Multiset[A] with MultisetLike[A, This]]
   extends com.sidewayscoding.MultisetLike[A, This]
-  with Builder[A, This]
-  with Growable[A]
-  with Shrinkable[A]
-  with Cloneable[com.sidewayscoding.mutable.Multiset[A]] { self =>
+     with Builder[A, This]
+     with Growable[A]
+     with Shrinkable[A]
+     with Cloneable[com.sidewayscoding.mutable.Multiset[A]] { self =>
 
   def +=(elem: A): this.type
 

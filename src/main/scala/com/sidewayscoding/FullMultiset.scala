@@ -3,8 +3,7 @@ package com.sidewayscoding
 import scala.collection.generic.GenericCompanion
 import scala.collection.generic.CanBuildFrom
 
-trait FullMultiset[A] extends Iterable[A]
-                         with com.sidewayscoding.Multiset[A]
+trait FullMultiset[A] extends Multiset[A]
                          with GenericMultisetTemplate[A, FullMultiset]
                          with FullMultisetLike[A, FullMultiset[A]] {
 

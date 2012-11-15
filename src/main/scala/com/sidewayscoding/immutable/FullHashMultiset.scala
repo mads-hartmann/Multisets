@@ -21,10 +21,11 @@ object FullHashMultiset extends ImmutableMultisetFactory[FullHashMultiset] {
  * the equals method of the elements you add obey the hashCode specification 
  * defined here http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.html#hashCode()
  */
-class FullHashMultiset[A] private[immutable] (private val delegate: HashMap[A, List[A]]) extends Multiset[A]
-                                                                                with FullMultiset[A]
-                                                                                with GenericMultisetTemplate[A, FullHashMultiset]
-                                                                                with FullMultisetLike[A, FullHashMultiset[A]] {
+class FullHashMultiset[A] private[immutable] (private val delegate: HashMap[A, List[A]]) 
+  extends FullMultiset[A]
+     with GenericMultisetTemplate[A, FullHashMultiset]
+     with FullMultisetLike[A, FullHashMultiset[A]] {
+
   override def companion: GenericCompanion[FullHashMultiset] = FullHashMultiset
   override def seq = FullHashMultiset.this
 

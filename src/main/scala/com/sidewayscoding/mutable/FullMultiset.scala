@@ -5,6 +5,7 @@ import scala.collection.generic.CanBuildFrom
 import com.sidewayscoding.GenericMultisetTemplate
 
 trait FullMultiset[A] extends Multiset[A]
+                         with com.sidewayscoding.FullMultiset[A]
                          with GenericMultisetTemplate[A, FullMultiset]
                          with FullMultisetLike[A, FullMultiset[A]] {
 
