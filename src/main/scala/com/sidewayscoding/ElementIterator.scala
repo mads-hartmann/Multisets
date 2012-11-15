@@ -1,24 +1,55 @@
 package com.sidewayscoding
 
-class ElementIterator[A] private (val element: A, count: Int) extends Iterator[A] {
+import scala.collection.SeqLike
+import scala.collection.mutable.Builder
+import scala.collection.mutable.ArrayBuffer
+import scala.collection.generic.CanBuildFrom
 
-  var index = 0;
+class ElementSeq[A] private (element: Option[A], count: Int) extends Seq[A] with SeqLike[A, ElementSeq[A]] {
 
-  def hasNext: Boolean = index < count
+  import ElementSeq._
 
-  def next(): A = {
-    if (index < count) {
-      index += 1
-      element
-    } else throw new NoSuchElementException("next on empty iterator")
+  def apply(idx: Int): A = if (idx > 0 && idx < count) element.get
+                           else throw new IndexOutOfBoundsException
 
+  def length = count
+
+  def iterator: Iterator[A] = new ElementIterator[A](element, count)
+
+  override def newBuilder: Builder[A, ElementSeq[A]] = {
+    new ArrayBuffer[A] mapResult fromSeq
   }
 }
 
-object ElementIterator {
+object ElementSeq {
 
-  def apply[A](a: A, count: Int): ElementIterator[A] = {
-    ElementIterator(a, count)
+  def apply[A]() = new ElementSeq[A](None, 0)
+
+  def apply[A](elem: A, count: Int) = new ElementSeq(Some(elem), count)
+
+  def fromSeq[A](buf: Seq[A]): ElementSeq[A] = {
+    new ElementSeq(buf.headOption, buf.size) 
   }
 
+  implicit def canBuildFrom[A]: CanBuildFrom[ElementSeq[_], A, ElementSeq[A]] = 
+    new CanBuildFrom[ElementSeq[_], A, ElementSeq[A]] {
+      def apply(): Builder[A, ElementSeq[A]] = new ArrayBuffer[A] mapResult fromSeq
+      def apply(from: ElementSeq[_]): Builder[A, ElementSeq[A]] = new ArrayBuffer[A] mapResult fromSeq
+    }
+
+  private class ElementIterator[A] (element: Option[A], count: Int) extends Iterator[A] {
+
+    var index = 0;
+
+    def hasNext: Boolean = !element.isEmpty && index < count
+
+    def next(): A = {
+      if (index < count) {
+        index += 1
+        element.get
+      } else throw new NoSuchElementException("next on empty iterator")
+
+    }
+  }
 }
+
