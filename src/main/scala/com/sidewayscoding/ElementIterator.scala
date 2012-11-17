@@ -44,12 +44,10 @@ object ElementSeq {
     def hasNext: Boolean = !element.isEmpty && index < count
 
     def next(): A = {
-      println("wtf!")
       if (index <= count) {
         index += 1
         element.get
-      } else throw new NoSuchElementException("next on empty iterator (lol)")
-
+      } else throw new NoSuchElementException("next on empty iterator")
     }
   }
 }
