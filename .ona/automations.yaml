@@ -1,0 +1,28 @@
+tasks:
+  update:
+    name: Fetch dependencies
+    description: Resolve and download the project's sbt/Scala dependencies.
+    command: |
+      sbt update
+    triggeredBy:
+      - postDevcontainerStart
+
+  compile:
+    name: Compile
+    description: Compile the Multisets sources with sbt.
+    command: |
+      sbt compile
+    triggeredBy:
+      - manual
+    dependsOn:
+      - update
+
+  test:
+    name: Test
+    description: Run the ScalaCheck and specs2 test suites.
+    command: |
+      sbt test
+    triggeredBy:
+      - manual
+    dependsOn:
+      - update

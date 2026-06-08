@@ -1,0 +1,10 @@
+// The Dev Container format allows you to configure your environment.
+// See https://aka.ms/devcontainer.json for more information.
+{
+	"name": "Multisets",
+	// Scala 2.9.2 + sbt are provided by the Dockerfile (JDK 8 base image + sbt).
+	"build": {
+		"context": ".",
+		"dockerfile": "Dockerfile"
+	}
+}
