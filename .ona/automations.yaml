@@ -1,0 +1,57 @@
+tasks:
+  install-dependencies:
+    name: Install dependencies
+    description: Install the legacy Java runtime and SBT launcher used by this Scala 2.9.2 project.
+    triggeredBy:
+      - prebuild
+      - postDevcontainerStart
+    command: |
+      set -eu
+      jdk_version="zulu7.56.0.11-ca-jdk7.0.352-linux_x64"
+      jdk_dir="$HOME/.local/share/jdks/$jdk_version"
+      jdk_archive="/tmp/$jdk_version.tar.gz"
+      mkdir -p "$HOME/.local/bin" "$HOME/.local/share/jdks" "$HOME/.sbt/launchers/0.12.4"
+      if [ ! -x "$jdk_dir/bin/java" ]; then
+        curl -fsSL "https://cdn.azul.com/zulu/bin/$jdk_version.tar.gz" -o "$jdk_archive"
+        echo "8a7387c1ed151474301b6553c6046f865dc6c1e1890bcf106acc2780c55727c8  $jdk_archive" | sha256sum -c -
+        tar -xzf "$jdk_archive" -C "$HOME/.local/share/jdks"
+        rm -f "$jdk_archive"
+      fi
+      cat > "$HOME/.sbt/repositories" <<'EOF'
+      [repositories]
+        local
+        maven-central: https://repo1.maven.org/maven2/
+        sonatype-releases: https://oss.sonatype.org/content/repositories/releases/
+        sonatype-snapshots: https://oss.sonatype.org/content/repositories/snapshots/
+        typesafe-ivy-releases: https://repo.typesafe.com/typesafe/ivy-releases/, [organization]/[module]/[revision]/[type]s/[artifact](-[classifier]).[ext]
+      EOF
+      launcher="$HOME/.sbt/launchers/0.12.4/sbt-launch.jar"
+      if [ ! -f "$launcher" ]; then
+        curl -fsSL "https://repo.scala-sbt.org/scalasbt/ivy-releases/org.scala-sbt/sbt-launch/0.12.4/sbt-launch.jar" -o "$launcher"
+      fi
+      cat > "$HOME/.local/bin/sbt-multisets" <<'EOF'
+      #!/usr/bin/env sh
+      exec "$HOME/.local/share/jdks/zulu7.56.0.11-ca-jdk7.0.352-linux_x64/bin/java" -Xms512M -Xmx1536M -XX:MaxPermSize=256M \
+        -Dsbt.repository.config="$HOME/.sbt/repositories" \
+        -Dsbt.override.build.repos=true \
+        -jar "$HOME/.sbt/launchers/0.12.4/sbt-launch.jar" "$@"
+      EOF
+      chmod +x "$HOME/.local/bin/sbt-multisets"
+
+  compile:
+    name: Compile
+    description: Compile the Scala sources with the project SBT launcher.
+    dependsOn:
+      - install-dependencies
+    triggeredBy:
+      - manual
+    command: sbt-multisets compile
+
+  test:
+    name: Test
+    description: Run the project test suite with the project SBT launcher.
+    dependsOn:
+      - install-dependencies
+    triggeredBy:
+      - manual
+    command: sbt-multisets test
